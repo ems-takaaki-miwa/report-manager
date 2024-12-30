@@ -1,0 +1,23 @@
+{
+	"name": "api",
+	"scripts": {
+		"dev": "wrangler dev",
+		"preview": "wrangler dev --remote",
+		"deploy": "wrangler deploy --minify",
+		"format": "pnpm biome format ./src --write"
+	},
+	"dependencies": {
+		"@hono/zod-validator": "^0.4.2",
+		"@prisma/adapter-d1": "^6.1.0",
+		"@prisma/client": "6.1.0",
+		"@types/bcrypt": "^5.0.2",
+		"hono": "^4.6.14",
+		"prisma": "^6.1.0",
+		"zod": "^3.24.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@cloudflare/workers-types": "^4.20241218.0",
+		"wrangler": "^3.96.0"
+	}
+}
