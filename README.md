@@ -9,7 +9,7 @@ cd front
 pnpm run dev
 ```
 ## バックエンド
-hono + Prisma + D1で作っています。（Drizzleに変更予定です。）
+hono + Drizzle + D1で作っています。
 ### getting started
 ```
 cd api
@@ -19,7 +19,7 @@ pnpm run dev
 # 実際のデータベース、KVを使う場合
 pnpm run preview
 ```
-## tips
+## その他
 ### コードフォーマット
 Biomeを使っています。
 ```

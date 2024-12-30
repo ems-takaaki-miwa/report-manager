@@ -1,9 +1,11 @@
-import { PrismaClient, User, File } from "@prisma/client";
-import { PrismaD1 } from "@prisma/adapter-d1";
+import { drizzle } from "drizzle-orm/d1";
 import { Context } from "hono";
 import { Bindings } from "../bindings";
 import { getCookie } from "hono/cookie";
 import * as sessionModel from "./sessionModel";
+import { files } from "../db/schema/files";
+import { createSelectSchema } from "drizzle-zod";
+import { z } from "zod";
 
 export type Param = {
 	name: string; // ファイル名
@@ -11,10 +13,14 @@ export type Param = {
 	path: string; // ファイルの保存パス
 };
 
+const fileSelectSchema = createSelectSchema(files);
+// スキーマから型を生成
+type File = z.infer<typeof fileSelectSchema>;
+
 export const getFiles = async (D1: D1Database): Promise<File[]> => {
-	const adapter = new PrismaD1(D1);
-	const prisma = new PrismaClient({ adapter });
-	return await prisma.file.findMany();
+	const db = drizzle(D1);
+	return await db.select().from(files);
+	// return fileSelectSchema.parse(result);
 };
 
 export const createPost = async (
@@ -54,7 +60,10 @@ export const createPost = async (
 };
 
 // ファイル削除
-export const deletePost = async (D1: D1Database, id: number): Promise<File | null> => {
+export const deletePost = async (
+	D1: D1Database,
+	id: number,
+): Promise<File | null> => {
 	const adapter = new PrismaD1(D1);
 	const prisma = new PrismaClient({ adapter });
 	try {
@@ -63,7 +72,6 @@ export const deletePost = async (D1: D1Database, id: number): Promise<File | nul
 				id: id,
 			},
 		});
-	
 	} catch (e) {
 		console.error("Error deleting file:", e);
 		return null;

@@ -5,7 +5,7 @@ import { timestamps } from "../columnHelper";
 export const files = sqliteTable("files", {
 	id: integer("id").primaryKey().notNull(),
 	name: text("name").notNull(),
-    fileDate: integer("fileDate", { mode: "timestamp" }),
+	fileDate: integer("fileDate", { mode: "timestamp" }),
 	uploaderId: text("uploaderId")
 		.notNull()
 		.references(() => users.id),
