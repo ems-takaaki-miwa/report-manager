@@ -21,6 +21,7 @@ preview_id = "7f9ef08cf2e545959b4f044442730720"
 binding = "DB"
 database_name = "document-manager"
 database_id = "2eb88d9d-a05c-40af-a8db-cea100a029db"
+migrations_dir = "migrations"
 
 # [ai]
 # binding = "AI"
