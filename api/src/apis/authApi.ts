@@ -7,21 +7,25 @@ import { checkSession } from "../middlewares/authMiddleware";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 
-const api = new Hono<{ Bindings: Bindings }>();
+const LoginParam = z.object({
+	userId: z.string(),
+	password: z.string(),
+});
 
-// ログインAPIエンドポイント
-api.post(
-	"/login",
-	zValidator(
-		"json",
-		z.object({
-			userId: z.string(),
-			password: z.string(),
-		}),
-	),
-	async (c) => {
+const RegisterParam = z.object({
+	userId: z.string(),
+	name: z.string(),
+	password: z.string(),
+});
+
+const api = new Hono<{ Bindings: Bindings }>()
+	// ログインAPIエンドポイント
+	.post("/login", zValidator("json", LoginParam), async (c) => {
+		console.log(new Date());
 		const param = c.req.valid("json");
 		try {
+			// Todo: ログイン済みの場合はエラーを返す
+
 			// ユーザーを取得
 			const user = await userModel.getUserByCredentials(
 				c.env.DB,
@@ -59,47 +63,35 @@ api.post(
 			console.error("Error during login:", error);
 			return c.json({ error: "An error occurred during login" }, 500);
 		}
-	},
-);
+	})
 
-// ユーザー登録APIエンドポイント
-api.post(
-	"/register",
-	zValidator(
-		"json",
-		z.object({
-			userId: z.string(),
-			name: z.string(),
-			password: z.string(),
-		}),
-	),
-	async (c) => {
-		const param: userModel.RegisterParam = c.req.valid("json");
+	// ユーザー登録APIエンドポイント
+	.post("/register", zValidator("json", RegisterParam), async (c) => {
+		const param = c.req.valid("json");
 
 		try {
 			// ユーザーを作成
-			const user = await userModel.createUser(
+			await userModel.createUser(
 				c.env.DB,
 				param.userId,
 				param.name,
 				param.password,
 			);
 
-			return c.json({ message: "User created", user });
+			return c.json({ message: "User created" });
 		} catch (error) {
 			console.error("Error during registration:", error);
 			return c.json({ error: "An error occurred during registration" }, 500);
 		}
-	},
-);
+	})
 
-api.post("/logout", checkSession, async (c) => {
-	try {
-		deleteCookie(c, sessionModel.COOKIE_NAME);
-		return c.json({ message: "Logout successful" });
-	} catch (e) {
-		return c.json({ error: "An error occurred during logout" }, 500);
-	}
-});
+	.post("/logout", checkSession, async (c) => {
+		try {
+			deleteCookie(c, sessionModel.COOKIE_NAME);
+			return c.json({ message: "Logout successful" });
+		} catch (e) {
+			return c.json({ error: "An error occurred during logout" }, 500);
+		}
+	});
 
 export default api;
