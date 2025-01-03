@@ -1,16 +1,11 @@
-import { PrismaClient, User } from "@prisma/client";
-import { PrismaD1 } from "@prisma/adapter-d1";
+import { drizzle } from "drizzle-orm/d1";
+import { eq, lt, gte, ne, and } from "drizzle-orm";
+import { users } from "../db/schema/users";
+import { createSelectSchema, createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
 
-export interface RegisterParam {
-	userId: string;
-	password: string;
-	name: string;
-}
-
-export interface LoginParam {
-	userId: string;
-	password: string;
-}
+const userSelectSchema = createSelectSchema(users);
+export type User = z.infer<typeof userSelectSchema>;
 
 const getHashedPassword = async (password: string): Promise<string> => {
 	return await crypto.subtle
@@ -28,27 +23,23 @@ export const createUser = async (
 	userId: string,
 	name: string,
 	password: string,
-): Promise<User> => {
-	const adapter = new PrismaD1(D1);
-	const prisma = new PrismaClient({ adapter });
+): Promise<boolean> => {
+	const db = drizzle(D1);
 	const hashedPassword: string = await getHashedPassword(password);
 
 	try {
 		// ユーザーを作成
-		const user = await prisma.user.create({
-			data: {
-				userId: userId,
-				name: name,
-				hashedPassword: hashedPassword,
-			},
+		// Todo: createdAt, updatedAtを追加
+		await db.insert(users).values({
+			id: userId,
+			name: name,
+			hashedPassword: hashedPassword,
 		});
 
-		return user;
+		return true;
 	} catch (error) {
 		console.error("Error creating user:", error);
 		throw error;
-	} finally {
-		await prisma.$disconnect();
 	}
 };
 
@@ -58,27 +49,28 @@ export const getUserByCredentials = async (
 	userId: string,
 	password: string,
 ): Promise<User | null> => {
-	const adapter = new PrismaD1(D1);
-	const prisma = new PrismaClient({ adapter });
+	const db = drizzle(D1);
 
 	const hashedPassword: string = await getHashedPassword(password);
 
 	try {
 		// データベースからユーザーを取得
-		const user = await prisma.user.findUnique({
-			where: { userId: userId, hashedPassword: hashedPassword },
-		});
+		// Todo: hashedPasswordをは返却しない
+		const user = await db
+			.select()
+			.from(users)
+			.where(
+				and(eq(users.id, userId), eq(users.hashedPassword, hashedPassword)),
+			)
+			.limit(1);
 
 		// ユーザーが存在しない場合はnullを返す
 		if (!user) {
 			return null;
 		}
-
-		return user;
+		return userSelectSchema.parse(user[0]);
 	} catch (error) {
 		console.error("Error retrieving user:", error);
 		throw error;
-	} finally {
-		await prisma.$disconnect();
 	}
 };
