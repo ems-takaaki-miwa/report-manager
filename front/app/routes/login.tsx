@@ -50,7 +50,7 @@ const Login = () => {
 					/>
 					<div className="validator-hint hidden">入力してください</div>
 
-					<button type="submit" className="btn btn-neutral mt-4">
+					<button type="submit" className="btn btn-primary mt-4">
 						Login
 					</button>
 				</fieldset>

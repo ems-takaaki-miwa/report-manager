@@ -1,12 +1,18 @@
 import React from "react";
-import { Outlet, useLocation, NavLink } from "react-router";
+import { Outlet, useLocation, NavLink, redirect } from "react-router";
+
+export async function clientLoader() {
+  // ここでログインしてるかをチェックする
+  // ログインしていない場合はリダイレクトする
+	return redirect("/login");
+}
 
 const ReportsLayout: React.FC = () => {
 	let location = useLocation();
 
 	const getTabClassName = (path: string): string => {
 		const isActive = location.pathname === path;
-		return `tab transition-[border-color] duration-300 ease-in-out ${isActive ? "tab-active" : ""}`;
+		return `tab ${isActive ? "tab-active [--tab-border-color:red]" : ""}`;
 	};
 
 	return (
