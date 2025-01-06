@@ -3,30 +3,41 @@ import { Context } from "hono";
 import { Bindings } from "../bindings";
 import { getCookie } from "hono/cookie";
 import * as sessionModel from "./sessionModel";
-import { files } from "../db/schema/files";
+import { reports, dailyReports, monthlyReports, annualReports } from "../db/schema/reports";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import { eq, lte, gte, and } from "drizzle-orm";
 import { User } from "./userModel";
 
-const fileSelectSchema = createSelectSchema(files);
+const reportSelectSchema = createSelectSchema(reports);
+const daylyReportSelectSchema = createSelectSchema(dailyReports);
 // スキーマから型を生成
-type File = z.infer<typeof fileSelectSchema>;
+type Report = z.infer<typeof reportSelectSchema>;
+type DaylyReport = z.infer<typeof daylyReportSelectSchema>;
 
-// ファイル取得
+// 全ファイル取得
 export const getFiles = async (
-	D1: D1Database,
-	from: Date,
-	to: Date,
+	D1: D1Database
 ): Promise<File[]> => {
 	const db = drizzle(D1);
 	// Todo: タイムゾーンの変換が必要
 	return await db
 		.select()
-		.from(files)
-		.where(and(gte(files.fileDate, from), lte(files.fileDate, to)));
+		.from(reports).all();
 	// return fileSelectSchema.parse(result);
 };
+
+// 全日報を取得
+export const getDailyReports = async (
+	D1: D1Database,
+): Promise<Report[]> => {
+	const db = drizzle(D1);
+	const report = await db
+		.select()
+		.from(dailyReports)
+		.innerJoin(reports, eq(dailyReports.reportId, reports.id));
+	return report;
+}
 
 // ファイル作成
 export const createFile = async (
