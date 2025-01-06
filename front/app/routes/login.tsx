@@ -1,20 +1,25 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { hono } from "~/lib/hono";
-import { useNavigate } from "react-router";
+import { useNavigate, redirect } from "react-router";
 import { Alert } from "~/components/ui/alert";
-import { useUserStore } from "~/stores/userStore";
-import { useSessionStore } from "~/stores/sessionStore";
 import { LoginButton } from "~/components/ui/loginButton";
+import { useAtom } from "jotai/react";
+import { userAtom } from "~/atoms";
+
+export async function clientLoader() {
+	// ここでログインしてるかをチェックする
+	// ログインしていない場合はリダイレクトする
+	const user = localStorage.getItem("user");
+	console.log(user);
+	if (user != "null") {
+		return redirect("/");
+	}
+	return null;
+}
 
 const Login: React.FC = () => {
-	const { user, setUser } = useUserStore();
-	const { setSessionId } = useSessionStore();
 	const navigate = useNavigate();
-	useEffect(() => {
-		if (user) {
-			navigate("/");
-		}
-	}, [user]);
+	const [user, setUserAtom] = useAtom(userAtom);
 
 	async function login(formData: FormData) {
 		const userId = await formData.get("userId");
@@ -32,8 +37,7 @@ const Login: React.FC = () => {
 			if (response.ok) {
 				// ログイン成功時にユーザー情報をローカルストレージに保存
 				const data = await response.json();
-				setUser(data.user);
-				setSessionId(data.sessionId);
+				setUserAtom({sessionId: data.sessionId, id: data.user.id, name: data.user.name});
 				navigate("/");
 			} else {
 				// ログイン失敗時の処理

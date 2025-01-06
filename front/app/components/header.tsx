@@ -2,14 +2,13 @@ import { Link, useNavigate } from "react-router";
 import { useRef } from "react";
 import SearchDialog from "./searchDialog";
 import { hono } from "~/lib/hono";
-import { useUserStore } from "~/stores/userStore";
-import { useSessionStore } from "~/stores/sessionStore";
+import { useAtom } from "jotai/react";
+import { userAtom } from "~/atoms";
 
 export const Header: React.FC = () => {
 	const dialog = useRef<HTMLDialogElement | null>(null);
 	const navigate = useNavigate();
-	const { removeUser } = useUserStore();
-	const { sessionId, removeSessionId } = useSessionStore();
+	const [user, setUser] = useAtom(userAtom);
 
 	const handleSearchClick = () => {
 		dialog.current?.showModal();
@@ -21,13 +20,12 @@ export const Header: React.FC = () => {
 				{},
 				{
 					headers: {
-						"Session-Id": sessionId || "",
+						"Session-Id": user?.sessionId || "",
 					},
 				},
 			);
 			console.log("ログアウトしました");
-			removeUser();
-			removeSessionId();
+			setUser(null);
 
 			navigate("/login");
 		} catch (error) {
