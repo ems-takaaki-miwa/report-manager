@@ -1,17 +1,27 @@
-import React from "react";
-import { Outlet, NavLink, redirect } from "react-router";
+import React, { useEffect } from "react";
+import { Outlet, NavLink, useNavigate } from "react-router";
+import { useUserStore } from "../stores/userStore";
 
-export async function clientLoader() {
-	// ここでログインしてるかをチェックする
-	// ログインしていない場合はリダイレクトする
-	const user = localStorage.getItem("user");
-	if (!user) {
-		return redirect("/login");
-	}
-	return null;
-}
+// export async function clientLoader() {
+// 	// ここでログインしてるかをチェックする
+// 	// ログインしていない場合はリダイレクトする
+// 	const user = localStorage.getItem("user");
+// 	if (!user) {
+// 		return redirect("/login");
+// 	}
+// 	return null;
+// }
 
 const ReportsLayout: React.FC = () => {
+	const navigate = useNavigate();
+	const { user } = useUserStore();
+
+	useEffect(() => {
+		if (user === null) {
+			navigate("/login");
+		}
+	}, [user]);
+
 	const getTabClassName = (isActive: boolean): string => {
 		return `tab ${isActive ? "tab-active" : ""}`;
 	};

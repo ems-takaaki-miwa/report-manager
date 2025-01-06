@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { setCookie, deleteCookie } from "hono/cookie";
 import { Bindings } from "../bindings";
 import * as userModel from "../models/userModel";
 import * as sessionModel from "../models/sessionModel";
@@ -52,8 +51,14 @@ const api = new Hono<{ Bindings: Bindings }>()
 			);
 
 			// ユーザーが取得できた場合、ログイン成功
-			// c.header('Access-Control-Allow-Credentials', "true");
-			return c.json({ message: "Login successful", user, sessionId });
+			// 必要な情報のみにパースして返す
+			const parsedUser: { id: string; name: string } =
+				userModel.userSelectSchema.parse(user);
+			return c.json({
+				message: "Login successful",
+				user: parsedUser,
+				sessionId,
+			});
 		} catch (error) {
 			console.error("Error during login:", error);
 			return c.json({ error: "An error occurred during login" }, 500);
@@ -84,7 +89,6 @@ const api = new Hono<{ Bindings: Bindings }>()
 	.post("/logout", checkSession, async (c) => {
 		try {
 			console.log("logout");
-			deleteCookie(c, sessionModel.COOKIE_NAME);
 			return c.json({ message: "Logout successful" });
 		} catch (e) {
 			return c.json({ error: "An error occurred during logout" }, 500);

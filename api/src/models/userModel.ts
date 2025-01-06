@@ -4,7 +4,7 @@ import { users } from "../db/schema/users";
 import { createSelectSchema, createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-const userSelectSchema = createSelectSchema(users);
+export const userSelectSchema = createSelectSchema(users);
 export type User = z.infer<typeof userSelectSchema>;
 
 const getHashedPassword = async (password: string): Promise<string> => {
