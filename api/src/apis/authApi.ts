@@ -43,12 +43,6 @@ const api = new Hono<{ Bindings: Bindings }>()
 			const maxAge = 60 * 60 * 24; // 1日
 			const now = Date.now();
 			const oneDayLater = now + maxAge; // 1日後
-			setCookie(c, sessionModel.COOKIE_NAME, sessionId, {
-				httpOnly: true,
-				secure: true,
-				sameSite: "Strict",
-				maxAge: maxAge,
-			});
 			// セッションIDをKVに保存
 			await sessionModel.setSessionToKV(
 				c.env.MY_KV,
@@ -58,7 +52,8 @@ const api = new Hono<{ Bindings: Bindings }>()
 			);
 
 			// ユーザーが取得できた場合、ログイン成功
-			return c.json({ message: "Login successful", user });
+			// c.header('Access-Control-Allow-Credentials', "true");
+			return c.json({ message: "Login successful", user, sessionId });
 		} catch (error) {
 			console.error("Error during login:", error);
 			return c.json({ error: "An error occurred during login" }, 500);
@@ -85,8 +80,10 @@ const api = new Hono<{ Bindings: Bindings }>()
 		}
 	})
 
+	// ログアウトAPIエンドポイント
 	.post("/logout", checkSession, async (c) => {
 		try {
+			console.log("logout");
 			deleteCookie(c, sessionModel.COOKIE_NAME);
 			return c.json({ message: "Logout successful" });
 		} catch (e) {

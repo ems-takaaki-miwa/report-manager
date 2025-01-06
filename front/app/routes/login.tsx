@@ -4,6 +4,14 @@ import { redirect, useFetcher } from "react-router";
 import { Alert } from "~/components/ui/alert";
 import type { Route } from "./+types/login";
 
+export async function clientLoader() {
+	// ここでログインしてる場合は右側の要素を表示する
+	const user = localStorage.getItem("user");
+	if (user) {
+		return redirect("/");
+	}
+}
+
 export async function clientAction({ request }: Route.ActionArgs) {
 	// ログイン処理をここに追加
 	await new Promise((res) => setTimeout(res, 1000));
@@ -20,6 +28,7 @@ export async function clientAction({ request }: Route.ActionArgs) {
 			// ログイン成功時にユーザー情報をローカルストレージに保存
 			const data = await response.json();
 			localStorage.setItem("user", JSON.stringify(data.user));
+			localStorage.setItem("sessionId", data.sessionId);
 			console.log("true");
 			return redirect("/");
 		} else {

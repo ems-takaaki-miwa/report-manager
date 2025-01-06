@@ -3,6 +3,7 @@ import { getCookie } from "hono/cookie";
 import { Bindings } from "../bindings";
 import * as sessionModel from "../models/sessionModel";
 import { createMiddleware } from "hono/factory";
+import { SESSION_ID_HEADER } from "../../../constants";
 // createMiddleware関数を使って、ミドルウェアを作成する
 
 export const checkSession = createMiddleware<{ Bindings: Bindings }>(
@@ -11,7 +12,8 @@ export const checkSession = createMiddleware<{ Bindings: Bindings }>(
 			{ error: "You do not have permission to access this resource." },
 			401,
 		);
-		const sessionId = getCookie(c, sessionModel.COOKIE_NAME);
+
+		const sessionId = c.req.header(SESSION_ID_HEADER);
 		if (sessionId == null) {
 			return errorResponse;
 		}
