@@ -1,36 +1,13 @@
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { useRef } from "react";
 import SearchDialog from "./searchDialog";
-import { hono } from "~/lib/hono";
-import { useAtom } from "jotai/react";
-import { userAtom } from "~/atoms";
+import { LogoutButton } from "./ui/logoutButton";
 
 export const Header: React.FC = () => {
 	const dialog = useRef<HTMLDialogElement | null>(null);
-	const navigate = useNavigate();
-	const [user, setUser] = useAtom(userAtom);
 
 	const handleSearchClick = () => {
 		dialog.current?.showModal();
-	};
-
-	const handleLogoutClick = async () => {
-		try {
-			hono.api.auth.logout.$post(
-				{},
-				{
-					headers: {
-						"Session-Id": user?.sessionId || "",
-					},
-				},
-			);
-			console.log("ログアウトしました");
-			setUser(null);
-
-			navigate("/login");
-		} catch (error) {
-			console.error("ログアウトに失敗しました:", error);
-		}
 	};
 
 	return (
@@ -70,7 +47,7 @@ export const Header: React.FC = () => {
 						className="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow"
 					>
 						<li>
-							<button onClick={handleLogoutClick}>ログアウト</button>
+							<LogoutButton />
 						</li>
 					</ul>
 				</div>

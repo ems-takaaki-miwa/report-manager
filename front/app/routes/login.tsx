@@ -37,7 +37,11 @@ const Login: React.FC = () => {
 			if (response.ok) {
 				// ログイン成功時にユーザー情報をローカルストレージに保存
 				const data = await response.json();
-				setUserAtom({sessionId: data.sessionId, id: data.user.id, name: data.user.name});
+				setUserAtom({
+					sessionId: data.sessionId,
+					id: data.user.id,
+					name: data.user.name,
+				});
 				navigate("/");
 			} else {
 				// ログイン失敗時の処理
