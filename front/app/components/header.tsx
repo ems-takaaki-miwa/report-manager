@@ -2,9 +2,12 @@ import { Link } from "react-router";
 import { useRef } from "react";
 import SearchDialog from "./searchDialog";
 import { LogoutButton } from "./ui/logoutButton";
+import { useAtom } from "jotai/react";
+import { userAtom } from "~/atoms";
 
 export const Header: React.FC = () => {
 	const dialog = useRef<HTMLDialogElement | null>(null);
+	const [user, setUser] = useAtom(userAtom);
 
 	const handleSearchClick = () => {
 		dialog.current?.showModal();
@@ -17,41 +20,43 @@ export const Header: React.FC = () => {
 					レポート管理
 				</Link>
 			</div>
-			<div className="flex gap-2">
-				<button
-					className="btn btn-ghost btn-circle"
-					onClick={handleSearchClick}
-				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						className="h-5 w-5"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
+			{user && (
+				<div className="flex gap-2">
+					<button
+						className="btn btn-ghost btn-circle"
+						onClick={handleSearchClick}
 					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth="2"
-							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-						/>
-					</svg>
-				</button>
-				<SearchDialog ref={dialog} />
-				<div className="dropdown dropdown-end">
-					<div tabIndex={0} role="button" className="btn btn-ghost">
-						<span>ユーザー名</span>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							className="h-5 w-5"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+							/>
+						</svg>
+					</button>
+					<SearchDialog ref={dialog} />
+					<div className="dropdown dropdown-end">
+						<div tabIndex={0} role="button" className="btn btn-ghost">
+							<span>{user.name}</span>
+						</div>
+						<ul
+							tabIndex={0}
+							className="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow"
+						>
+							<li>
+								<LogoutButton />
+							</li>
+						</ul>
 					</div>
-					<ul
-						tabIndex={0}
-						className="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow"
-					>
-						<li>
-							<LogoutButton />
-						</li>
-					</ul>
 				</div>
-			</div>
+			)}
 		</div>
 	);
 };
