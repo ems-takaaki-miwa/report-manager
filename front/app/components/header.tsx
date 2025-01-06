@@ -1,22 +1,11 @@
-import { Link, redirect  } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useRef } from "react";
 import SearchDialog from "./searchDialog";
 import { hono } from "~/lib/hono";
 
-export async function clientLoader() {
-	// ここでログインしてる場合は右側の要素を表示する
-	const user = localStorage.getItem("user");
-	console.log("user");
-	console.log(user);
-	if (user) {
-		return {
-			user: JSON.parse(user),
-		};
-	}
-}
-
-export default function Header() {
+export const Header: React.FC = () => {
 	const dialog = useRef<HTMLDialogElement | null>(null);
+	const navigate = useNavigate(); // useNavigateを追加
 
 	const handleSearchClick = () => {
 		dialog.current?.showModal();
@@ -24,16 +13,19 @@ export default function Header() {
 
 	const handleLogoutClick = async () => {
 		try {
-			await fetch("http://127.0.0.1:8787/api/auth/logout", {
-				method: "POST",
-				headers: {
-					"Session-Id": localStorage.getItem("sessionId") || "",
+			hono.api.auth.logout.$post(
+				{},
+				{
+					headers: {
+						"Session-Id": localStorage.getItem("sessionId") || "",
+					},
 				},
-			});
+			);
 			console.log("ログアウトしました");
-			// await hono.api.auth.logout.$post();
 			localStorage.removeItem("user");
-			redirect("/login");
+			localStorage.removeItem("sessionId");
+
+			navigate("/login");
 		} catch (error) {
 			console.error("ログアウトに失敗しました:", error);
 		}
@@ -83,4 +75,4 @@ export default function Header() {
 			</div>
 		</div>
 	);
-}
+};

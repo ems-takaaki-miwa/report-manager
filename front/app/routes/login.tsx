@@ -73,7 +73,11 @@ const Login: React.FC = () => {
 					<div className="validator-hint hidden">入力してください</div>
 
 					<button type="submit" className="btn btn-primary mt-4">
-					{fetcher.state !== "idle" ? <span className="loading loading-spinner loading-md"></span>: "ログイン"}
+						{fetcher.state !== "idle" ? (
+							<span className="loading loading-spinner loading-md"></span>
+						) : (
+							"ログイン"
+						)}
 					</button>
 				</fieldset>
 			</fetcher.Form>

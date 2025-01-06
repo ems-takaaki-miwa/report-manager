@@ -19,7 +19,11 @@ const ReportsLayout: React.FC = () => {
 	return (
 		<div className="w-full bg-base-200">
 			<div role="tablist" className="tabs tabs-border sticky top-0  z-10 p-4">
-				<NavLink to="/" role="tab" className={({ isActive }) => getTabClassName(isActive)}>
+				<NavLink
+					to="/"
+					role="tab"
+					className={({ isActive }) => getTabClassName(isActive)}
+				>
 					日報
 				</NavLink>
 				<NavLink

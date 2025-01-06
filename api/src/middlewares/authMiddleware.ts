@@ -12,7 +12,7 @@ export const checkSession = createMiddleware<{ Bindings: Bindings }>(
 			401,
 		);
 
-		const sessionId = c.req.header('Session-Id');
+		const sessionId = c.req.header("Session-Id");
 		if (sessionId == null) {
 			return errorResponse;
 		}
