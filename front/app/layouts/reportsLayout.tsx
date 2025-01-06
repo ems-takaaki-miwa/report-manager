@@ -2,9 +2,14 @@ import React from "react";
 import { Outlet, useLocation, NavLink, redirect } from "react-router";
 
 export async function clientLoader() {
-  // ここでログインしてるかをチェックする
-  // ログインしていない場合はリダイレクトする
-	return redirect("/login");
+	// ここでログインしてるかをチェックする
+	// ログインしていない場合はリダイレクトする
+	const user = localStorage.getItem("user");
+	console.log(user);
+	if (!user) {
+		return redirect("/login");
+	}
+	return null;
 }
 
 const ReportsLayout: React.FC = () => {

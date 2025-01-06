@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { User } from "./userModel";
 export interface Session {
 	user: User;
 	expires: number;

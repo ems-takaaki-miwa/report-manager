@@ -8,7 +8,7 @@ import { Bindings } from "./bindings";
 const middleware = new Hono<{ Bindings: Bindings }>()
 	.use("*", prettyJSON())
 	.use(
-		"/api/*",
+		"*",
 		cors({
 			origin: "*", // ここを変更することで、許可するオリジンを変更できる
 		}),

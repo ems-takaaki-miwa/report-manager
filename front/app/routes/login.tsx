@@ -1,48 +1,61 @@
-import React, { useState } from "react";
+import React from "react";
+import { hono } from "~/lib/hono";
+import { redirect, useFetcher } from "react-router";
+import { Alert } from "~/components/ui/alert";
+import type { Route } from "./+types/login";
 
-const Login = () => {
-	const [userId, setUserId] = useState("");
-	const [password, setPassword] = useState("");
+export async function clientAction({ request }: Route.ActionArgs) {
+	// ログイン処理をここに追加
+	await new Promise((res) => setTimeout(res, 1000));
+	let data = await request.formData();
+	try {
+		const response = await hono.api.auth.login.$post({
+			json: {
+				userId: data.get("userId") as string,
+				password: data.get("password") as string,
+			},
+		});
 
-	const handleSubmit = async (event: React.FormEvent) => {
-		event.preventDefault();
-		// ログイン処理をここに追加
-		console.log("User ID:", userId);
-		console.log("Password:", password);
-
-		// 例: APIリクエストを送信
-		try {
-			const response = await fetch("/api/login", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ userId, password }),
-			});
-
-			if (response.ok) {
-				// ログイン成功時の処理
-				console.log("Login successful");
-			} else {
-				// ログイン失敗時の処理
-				console.error("Login failed");
-			}
-		} catch (error) {
-			console.error("Error:", error);
+		if (response.ok) {
+			// ログイン成功時にユーザー情報をローカルストレージに保存
+			const data = await response.json();
+			localStorage.setItem("user", JSON.stringify(data.user));
+			console.log("true");
+			return redirect("/");
+		} else {
+			// ログイン失敗時の処理
+			console.error("Login failed");
+			return { ok: false, error: "ログインに失敗しました" };
 		}
-	};
+	} catch (error) {
+		console.error("Error:", error);
+		return { ok: false, error: "ログインに失敗しました" };
+	}
+}
+
+const Login: React.FC = () => {
+	let fetcher = useFetcher();
 
 	return (
 		<div className="flex flex-col items-center justify-center min-h-full">
-			<form onSubmit={handleSubmit}>
-				<fieldset className="fieldset w-xs bg-base-200 border border-base-300 p-4 rounded-box">
+			<fetcher.Form method="post">
+				<fieldset className="fieldset w-xs border border-base-300 p-4 rounded-box shadow-sm">
 					<legend className="fieldset-legend">ログイン</legend>
+					{fetcher.data?.error && (
+						<Alert message={fetcher.data.error} isVisible={true} />
+					)}
 					<label className="fieldset-label">User ID</label>
-					<input className="input validator" placeholder="User ID" required />
+					<input
+						name="userId"
+						className="input validator"
+						placeholder="User ID"
+						required
+					/>
 					<div className="validator-hint hidden">入力してください</div>
 
 					<label className="fieldset-label">Password</label>
 					<input
+						name="password"
 						type="password"
 						className="input validator"
 						placeholder="Password"
@@ -51,10 +64,10 @@ const Login = () => {
 					<div className="validator-hint hidden">入力してください</div>
 
 					<button type="submit" className="btn btn-primary mt-4">
-						Login
+					{fetcher.state !== "idle" ? <span className="loading loading-spinner loading-md"></span>: "ログイン"}
 					</button>
 				</fieldset>
-			</form>
+			</fetcher.Form>
 		</div>
 	);
 };
