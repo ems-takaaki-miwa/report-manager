@@ -2,7 +2,6 @@ import { Link, redirect  } from "react-router";
 import { useRef } from "react";
 import SearchDialog from "./searchDialog";
 import { hono } from "~/lib/hono";
-import { SESSION_ID_HEADER } from "../../../constants";
 
 export async function clientLoader() {
 	// ここでログインしてる場合は右側の要素を表示する
@@ -28,7 +27,7 @@ export default function Header() {
 			await fetch("http://127.0.0.1:8787/api/auth/logout", {
 				method: "POST",
 				headers: {
-					SESSION_ID_HEADER: localStorage.getItem("sessionId") || "",
+					"Session-Id": localStorage.getItem("sessionId") || "",
 				},
 			});
 			console.log("ログアウトしました");

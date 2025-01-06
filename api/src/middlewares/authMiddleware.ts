@@ -3,7 +3,6 @@ import { getCookie } from "hono/cookie";
 import { Bindings } from "../bindings";
 import * as sessionModel from "../models/sessionModel";
 import { createMiddleware } from "hono/factory";
-import { SESSION_ID_HEADER } from "../../../constants";
 // createMiddleware関数を使って、ミドルウェアを作成する
 
 export const checkSession = createMiddleware<{ Bindings: Bindings }>(
@@ -13,7 +12,7 @@ export const checkSession = createMiddleware<{ Bindings: Bindings }>(
 			401,
 		);
 
-		const sessionId = c.req.header(SESSION_ID_HEADER);
+		const sessionId = c.req.header('Session-Id');
 		if (sessionId == null) {
 			return errorResponse;
 		}
