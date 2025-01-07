@@ -21,14 +21,50 @@ type ReportInsert = z.infer<typeof reportInsertSchema>;
 
 type ReportType = "daily" | "monthly" | "annual";
 
-// レポート取得
-export const getReports = async (
+// 年月による日報検索メソッド
+export const getDailyReportsByYearMonth = async (
 	D1: D1Database,
-	type: ReportType,
+	year: number,
+	month: number,
 ): Promise<Report[]> => {
 	const db = drizzle(D1);
 
-	return await db.select().from(reports).where(eq(reports.type, type)).all();
+	return await db
+		.select()
+		.from(reports)
+		.where(
+			and(
+				eq(reports.type, "daily"),
+				eq(reports.year, year),
+				eq(reports.month, month),
+			),
+		)
+		.all();
+};
+
+// 年による月報検索メソッド
+export const getMonthlyReportsByYear = async (
+	D1: D1Database,
+	year: number,
+): Promise<Report[]> => {
+	const db = drizzle(D1);
+
+	return await db
+		.select()
+		.from(reports)
+		.where(and(eq(reports.type, "monthly"), eq(reports.year, year)))
+		.all();
+};
+
+// 年による年報検索メソッド
+export const getAnnualReports = async (D1: D1Database): Promise<Report[]> => {
+	const db = drizzle(D1);
+
+	return await db
+		.select()
+		.from(reports)
+		.where(eq(reports.type, "annual"))
+		.all();
 };
 
 // レポート作成メソッド

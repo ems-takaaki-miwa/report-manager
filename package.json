@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "biome format --write ./api/src ./front/app"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "hono": "^4.6.15"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4"
   }
 }

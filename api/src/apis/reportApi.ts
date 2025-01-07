@@ -5,9 +5,13 @@ import { checkSession } from "../middlewares/authMiddleware";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 
-const FileGetParam = z.object({
-	from: z.coerce.date(),
-	to: z.coerce.date(),
+const DailyReportsParam = z.object({
+	month: z.coerce.number(),
+	year: z.coerce.number(),
+});
+
+const MonthlyReportsParam = z.object({
+	year: z.coerce.number(),
 });
 
 export const FileCreateParam = z.object({
@@ -21,19 +25,31 @@ const api = new Hono<{ Bindings: Bindings }>()
 		return checkSession(c, next);
 	})
 
-	// ファイル取得
-	.get("/daily-reports", async (c) => {
-		const reports = await model.getReports(c.env.DB, "daily");
+	// 日報取得
+	.get("/daily-reports", zValidator("json", DailyReportsParam), async (c) => {
+		const param = c.req.valid("json");
+		const reports = await model.getDailyReportsByYearMonth(
+			c.env.DB,
+			param.year,
+			param.month,
+		);
 		return c.json({ reports: reports, ok: true });
 	})
 
-	.get("/monthly-reports", async (c) => {
-		const reports = await model.getReports(c.env.DB, "monthly");
-		return c.json({ reports: reports, ok: true });
-	})
+	// 月報取得
+	.get(
+		"/monthly-reports",
+		zValidator("json", MonthlyReportsParam),
+		async (c) => {
+			const param = c.req.valid("json");
+			const reports = await model.getMonthlyReportsByYear(c.env.DB, param.year);
+			return c.json({ reports: reports, ok: true });
+		},
+	)
 
+	// 年報取得
 	.get("/annual-reports", async (c) => {
-		const reports = await model.getReports(c.env.DB, "annual");
+		const reports = await model.getAnnualReports(c.env.DB);
 		return c.json({ reports: reports, ok: true });
 	})
 
@@ -47,6 +63,7 @@ const api = new Hono<{ Bindings: Bindings }>()
 		return c.json({ post: newFile, ok: true }, 201);
 	})
 
+	// ファイル削除
 	.delete(
 		"/",
 		zValidator(
