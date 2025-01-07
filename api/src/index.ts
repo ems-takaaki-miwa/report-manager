@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { prettyJSON } from "hono/pretty-json";
-import fileApi from "./apis/fileApi";
+import reportApi from "./apis/reportApi";
 import authApi from "./apis/authApi";
 import { Bindings } from "./bindings";
 
@@ -18,7 +18,7 @@ const app = new Hono<{ Bindings: Bindings }>()
 	.get("/", (c) => c.text("Pretty Blog API"))
 	.notFound((c) => c.json({ message: "Not Found", ok: false }, 404))
 	.route("/api", middleware)
-	.route("/api/files", fileApi)
+	.route("/api/reports/", reportApi)
 	.route("/api/auth", authApi);
 
 export type AppType = typeof app;

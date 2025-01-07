@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { Bindings } from "../bindings";
-import * as model from "../models/fileModel";
+import * as model from "../models/reportModel";
 import { checkSession } from "../middlewares/authMiddleware";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
@@ -22,18 +22,25 @@ const api = new Hono<{ Bindings: Bindings }>()
 	})
 
 	// ファイル取得
-	.get("/", zValidator("json", FileGetParam), async (c) => {
-		console.log(new Date().toString());
-		const param = c.req.valid("json");
-		const files = await model.getFiles(c.env.DB, param.from, param.to);
-		console.log(files);
-		return c.json({ files: files, ok: true });
+	.get("/daily-reports", async (c) => {
+		const reports = await model.getReports(c.env.DB, "daily");
+		return c.json({ reports: reports, ok: true });
+	})
+
+	.get("/monthly-reports", async (c) => {
+		const reports = await model.getReports(c.env.DB, "monthly");
+		return c.json({ reports: reports, ok: true });
+	})
+
+	.get("/annual-reports", async (c) => {
+		const reports = await model.getReports(c.env.DB, "annual");
+		return c.json({ reports: reports, ok: true });
 	})
 
 	// ファイル作成
-	.post("/", zValidator("json", FileCreateParam), async (c) => {
+	.post("/", zValidator("json", model.reportInsertSchema), async (c) => {
 		const param = c.req.valid("json");
-		const newFile = await model.createFile(c, param.name, param.fileDate);
+		const newFile = await model.createReport(c.env.DB, param);
 		if (!newFile) {
 			return c.json({ error: "Can not create new file", ok: false }, 422);
 		}
@@ -50,7 +57,7 @@ const api = new Hono<{ Bindings: Bindings }>()
 		),
 		async (c) => {
 			const param = c.req.valid("json");
-			const deleteFile = await model.deletePost(c.env.DB, param.id);
+			const deleteFile = await model.deleteReport(c.env.DB, param.id);
 			if (!deleteFile) {
 				return c.json({ error: "Can not delete the file", ok: false }, 422);
 			}
