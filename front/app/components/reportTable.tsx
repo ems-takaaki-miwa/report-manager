@@ -39,39 +39,41 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, type }) => {
 	};
 
 	return (
-		<table className="table bg-base-100 w-full">
-			<thead>
-				<tr>
-					<th className="text-center">{getDateHeader()}</th>
-					<th className="text-center">タイトル</th>
-					<th className="text-center">更新日</th>
-					<th className="text-center"></th>
-				</tr>
-			</thead>
-			<tbody>
-				{reports.map((report) => (
-					<tr key={report.id}>
-						<td>{getDateCell(report)}</td>
-						<td>{report.title}</td>
-						<td>{report.updatedAt}</td>
-						<td>
-							<button className="btn btn-primary btn-sm">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									height="24px"
-									viewBox="0 -960 960 960"
-									width="24px"
-									className="fill-current"
-								>
-									<path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" />
-								</svg>
-							</button>
-						</td>
-					</tr>
-				))}
-			</tbody>
-		</table>
-	);
+    <div className="overflow-x-auto w-full">
+      <table className="table bg-base-100 w-full">
+        <thead>
+          <tr>
+            <th className="text-center whitespace-nowrap">{getDateHeader()}</th>
+            <th className="text-center whitespace-nowrap">タイトル</th>
+            <th className="text-center whitespace-nowrap">更新日</th>
+            <th className="text-center whitespace-nowrap"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {reports.map((report) => (
+            <tr key={report.id}>
+              <td className="text-center whitespace-nowrap">{getDateCell(report)}</td>
+              <td className="text-center break-all">{report.title}</td>
+              <td className="text-center whitespace-nowrap">{report.updatedAt}</td>
+              <td className="text-center whitespace-nowrap">
+                <button className="btn btn-primary btn-sm">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="20px"
+                    viewBox="0 -960 960 960"
+                    width="20px"
+                    className="fill-current"
+                  >
+                    <path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
 export default ReportTable;
