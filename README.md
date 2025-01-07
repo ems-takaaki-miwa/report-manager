@@ -43,3 +43,7 @@ Cloudflare Workers Adminでworkers, pages, KV, D1, R2の編集、デプロイ権
     - 500: サーバー側でエラーが発生した場合はエラー画面に遷移する
       - ここが参考になりそう: https://reactrouter.com/how-to/error-boundary#3-throw-data-in-loadersactions
 - 全てpostにする
+- 月の選択、遷移は、formを使い、中に見えないinputを書いて、そこで引数として月と年を渡す手段もありかもしれない。
+- コンポーネントの中で取得するようにする？
+  - 今は、ページの中で取得して、それをコンポーネントに渡しているが、コンポーネントの中で取得するようにする
+  - useStateの値を渡せば再レンダリングされるはず。
