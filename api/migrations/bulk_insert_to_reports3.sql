@@ -1,26 +1,32 @@
-WITH RECURSIVE months(month) AS (
-  VALUES(1)
-  UNION ALL
-  SELECT month + 1 FROM months WHERE month < 12
-)
-INSERT INTO reports (type, title, day, month, year, uploaderId, createdAt, updatedAt)
-SELECT 
-  'monthly' as type,
-  CASE (ABS(RANDOM()) % 5)
-    WHEN 0 THEN '月次売上集計レポート'
-    WHEN 1 THEN '月間プロジェクト進捗報告'
-    WHEN 2 THEN '月次経費精算書'
-    WHEN 3 THEN '月間業績評価シート'
-    ELSE '月次在庫管理状況'
-  END as title,
-  1 as day,
-  month,
-  strftime('%Y', 'now') as year,
-  CASE (ABS(RANDOM()) % 3)
-    WHEN 0 THEN 'test'
-    WHEN 1 THEN 'test'
-    ELSE 'test'
-  END as uploaderId,
-  unixepoch() as createdAt,
-  unixepoch() as updatedAt
-FROM months;
+INSERT INTO reports (type, title, day, month, year, uploaderId, createdAt, updatedAt) VALUES
+('daily', '日報 1', 1, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 2', 2, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 3', 3, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 4', 4, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 5', 5, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 6', 6, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 7', 7, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 8', 8, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 9', 9, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 10', 10, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 11', 11, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 12', 12, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 13', 13, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 14', 14, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 15', 15, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 16', 16, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 17', 17, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 18', 18, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 19', 19, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 20', 20, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 21', 21, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 22', 22, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 23', 23, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 24', 24, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 25', 25, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 26', 26, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 27', 27, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 28', 28, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 29', 29, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 30', 30, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000),
+('daily', '日報 31', 31, 1, 2025, 'test', strftime('%s', 'now') * 1000, strftime('%s', 'now') * 1000);
