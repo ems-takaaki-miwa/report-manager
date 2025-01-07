@@ -37,7 +37,9 @@ Cloudflare Workers Adminでworkers, pages, KV, D1, R2の編集、デプロイ権
 - formのバリデーション
 - 実際にapiを実行する
 - 管理画面、ファイルアップロード画面
-- ファイルデータの型を修正（年月日を一緒にする？）
-- ログインしてない場合はファイル一覧を見れないようにする
-- [react Hook Form](https://react-hook-form.com/)か[react-routerのfetcher](https://reactrouter.com/how-to/fetchers)を使う
-  - fetcherを使う場合は[これ](https://reactrouter.com/how-to/form-validation)が参考になりそう
+- ClientLoaderでのエラーハンドリングが難しい
+  - クライアントローダーで取得にミスったときにどんな挙動であるべき？
+    - 401: 認証していない場合、認証が切れている場合はログイン画面に遷移する
+    - 500: サーバー側でエラーが発生した場合はエラー画面に遷移する
+      - ここが参考になりそう: https://reactrouter.com/how-to/error-boundary#3-throw-data-in-loadersactions
+- 全てpostにする

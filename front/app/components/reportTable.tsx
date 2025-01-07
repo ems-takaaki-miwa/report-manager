@@ -1,25 +1,14 @@
-type BaseReport = {
-	id: string;
-	title: string;
-	updatedAt: string;
-};
-
-export type DailyReport = BaseReport & {
+export type Report = {
+	id: number;
+	type: string;
 	year: number;
 	month: number;
 	day: number;
+	title: string;
+	uploaderId: string;
+	updatedAt: string | null;
+	createdAt: string | null;
 };
-
-export type MonthlyReport = BaseReport & {
-	year: number;
-	month: number;
-};
-
-export type AnnualReport = BaseReport & {
-	year: number;
-};
-
-type Report = DailyReport | MonthlyReport | AnnualReport;
 
 interface ReportTableProps {
 	reports: Report[];
@@ -41,11 +30,11 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, type }) => {
 	const getDateCell = (report: Report) => {
 		switch (type) {
 			case "daily":
-				return `${(report as DailyReport).day}日`;
+				return `${report.day}日`;
 			case "monthly":
-				return `${(report as MonthlyReport).month}月`;
+				return `${report.month}月`;
 			case "annual":
-				return `${(report as AnnualReport).year}年`;
+				return `${report.year}年`;
 		}
 	};
 

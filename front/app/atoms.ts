@@ -1,6 +1,6 @@
 import { atomWithStorage } from "jotai/utils";
 
-interface User {
+export interface User {
 	id: string;
 	name: string;
 	sessionId: string;

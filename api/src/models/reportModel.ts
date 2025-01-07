@@ -9,7 +9,7 @@ import { z } from "zod";
 import { eq, lte, gte, and } from "drizzle-orm";
 import { User } from "./userModel";
 
-const reportSelectSchema = createSelectSchema(reports);
+export const reportSelectSchema = createSelectSchema(reports);
 export const reportInsertSchema = createSelectSchema(reports).omit({
 	id: true,
 	createdAt: true,

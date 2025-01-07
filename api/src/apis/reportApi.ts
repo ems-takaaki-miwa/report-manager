@@ -26,7 +26,7 @@ const api = new Hono<{ Bindings: Bindings }>()
 	})
 
 	// 日報取得
-	.get("/daily-reports", zValidator("json", DailyReportsParam), async (c) => {
+	.post("/daily-reports", zValidator("json", DailyReportsParam), async (c) => {
 		const param = c.req.valid("json");
 		const reports = await model.getDailyReportsByYearMonth(
 			c.env.DB,

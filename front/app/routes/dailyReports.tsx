@@ -1,74 +1,101 @@
-import ReportTable, { type DailyReport } from "../components/reportTable";
+import { redirect, useNavigate, data } from "react-router";
+import ReportTable, { type Report } from "../components/reportTable";
 import type { Route } from "./+types/dailyReports";
 import { useState } from "react";
+import { hono } from "~/lib/hono";
+import { type User } from "~/atoms";
 
-const sampleReports: DailyReport[] = [
-	{
-		id: "1",
-		year: 2024,
-		month: 3,
-		day: 15,
-		title: "2024年3月15日 日報",
-		updatedAt: "2024/03/15",
-	},
-	{
-		id: "2",
-		year: 2024,
-		month: 3,
-		day: 14,
-		title: "2024年3月14日 日報",
-		updatedAt: "2024/03/14",
-	},
-];
+const getDailyReport = async (
+	month: number,
+	year: number,
+): Promise<Report[] | number> => {
+	const user = JSON.parse(localStorage.getItem("user") || "null") as User;
+	const response = await hono.api.reports["daily-reports"].$post(
+		{
+			json: {
+				year: year,
+				month: month,
+			},
+		},
+		{
+			headers: {
+				"Session-Id": user?.sessionId || "",
+			},
+		},
+	);
+	if (response.status === 401) {
+		localStorage.removeItem("user");
+		return 401;
+	}
+
+	if (response.status === 500) {
+		console.error("サーバーエラー");
+		return 500;
+	}
+	const data = await response.json();
+	return data.reports;
+};
 
 export async function clientLoader() {
 	// 今月のデータを取得する
-	return sampleReports;
+	const year = new Date().getFullYear();
+	const month = new Date().getMonth() + 1;
+	const reports = await getDailyReport(month, year);
+	if (reports === 401) {
+		// sessionIdを削除してログイン画面にリダイレクトする
+		// jotaiのuserAtomを更新していないなから？レイアウトが更新されず、ヘッダーが表示されたままになる
+		localStorage.removeItem("user");
+		return redirect("/login");
+	} else if (reports === 500) {
+		console.error("サーバーエラー");
+		throw data("サーバー側でエラーが起きました。", { status: 500 });
+	}
+	return reports as Report[];
 }
 
-const reportFormat = (
-	reports: DailyReport[],
-): Record<string, DailyReport[]> => {
-	return reports.reduce(
-		(acc, report) => {
-			const key = `${report.year}-${report.month}`;
-			if (!acc[key]) {
-				acc[key] = [];
-			}
-			acc[key].push(report);
-			return acc;
-		},
-		{} as Record<string, DailyReport[]>,
-	);
-};
-
 const DailyReports: React.FC<Route.ComponentProps> = ({ loaderData }) => {
-	const [reports, setReports] = useState<DailyReport[]>(loaderData);
+	const [reports, setReports] = useState<Report[]>(loaderData);
 	const [selectedYear, setSelectedYear] = useState<number>(
 		new Date().getFullYear(),
 	);
 	const [selectedMonth, setSelectedMonth] = useState<number>(
 		new Date().getMonth() + 1,
 	);
+	const navigate = useNavigate();
 
-	const handleArrowClick = (direction: "prev" | "next") => {
+	const handleArrowClick = async (direction: "prev" | "next") => {
+		let newMonth = selectedMonth;
+		let newYear = selectedYear;
 		// 年月を更新する
 		if (direction === "prev") {
 			if (selectedMonth === 1) {
-				setSelectedMonth(12);
-				setSelectedYear(selectedYear - 1);
+				newMonth = 12;
+				newYear = selectedYear - 1;
 			} else {
-				setSelectedMonth(selectedMonth - 1);
+				newMonth = selectedMonth - 1;
 			}
 		} else {
 			if (selectedMonth === 12) {
-				setSelectedMonth(1);
-				setSelectedYear(selectedYear + 1);
+				newMonth = 1;
+				newYear = selectedYear + 1;
 			} else {
-				setSelectedMonth(selectedMonth + 1);
+				newMonth = selectedMonth + 1;
 			}
 		}
 		// データを更新する
+		const reports = await getDailyReport(newMonth, newYear);
+		if (reports === 401) {
+			return navigate("/login");
+		} else if (reports === 500) {
+			console.error("サーバーエラー");
+			alert("サーバーエラー");
+			return;
+		} else {
+			// stateを更新
+			setSelectedMonth(newMonth);
+			setSelectedYear(newYear);
+			setReports(reports as Report[]);
+		}
 	};
 
 	return (
@@ -94,7 +121,6 @@ const DailyReports: React.FC<Route.ComponentProps> = ({ loaderData }) => {
 						<button
 							className="btn btn-ghost"
 							onClick={() => handleArrowClick("next")}
-							disabled={true}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"

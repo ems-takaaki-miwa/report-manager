@@ -11,7 +11,7 @@ export async function clientLoader() {
 	// ログインしていない場合はリダイレクトする
 	const user = localStorage.getItem("user");
 	console.log(user);
-	if (user != "null") {
+	if (user != null && user != "null") {
 		return redirect("/");
 	}
 	return null;
