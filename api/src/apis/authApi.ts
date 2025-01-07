@@ -39,9 +39,12 @@ const api = new Hono<{ Bindings: Bindings }>()
 			// セッションIDを生成
 			const sessionId = crypto.randomUUID();
 			// セッションIDをCookieに保存
-			const maxAge = 60 * 60 * 24; // 1日
+			const maxAge = 60 * 60 * 24 * 1000; // 1日。1000倍しているのはミリ秒に変換するため
+			console.log("maxAge", maxAge);
 			const now = Date.now();
+			console.log(now);
 			const oneDayLater = now + maxAge; // 1日後
+			console.log("oneDayLater", oneDayLater);
 			// セッションIDをKVに保存
 			await sessionModel.setSessionToKV(
 				c.env.MY_KV,
