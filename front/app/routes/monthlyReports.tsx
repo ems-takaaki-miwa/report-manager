@@ -1,71 +1,87 @@
-import React from "react";
-import ReportTable, { type MonthlyReport } from "../components/reportTable";
+import { redirect, data } from "react-router";
+import ReportTable, { type Report } from "../components/reportTable";
+import type { Route } from "./+types/monthlyReports";
+import { useMonthlyReports } from "~/hooks/useMonthlyReports";
+import { formatYearMonth, getCurrentYearMonth } from "../lib/utils/dateUtils";
+import { getMonthlyReports } from "../lib/api/reportApi";
 
-const sampleReports: MonthlyReport[] = [
-	{
-		id: "1",
-		year: 2024,
-		month: 3,
-		title: "2024年3月度 月次報告",
-		updatedAt: "2024/03/31",
-	},
-	{
-		id: "2",
-		year: 2024,
-		month: 2,
-		title: "2024年2月度 月次報告",
-		updatedAt: "2024/02/29",
-	},
-	{
-		id: "3",
-		year: 2024,
-		month: 1,
-		title: "2024年1月度 月次報告",
-		updatedAt: "2024/01/31",
-	},
-	{
-		id: "4",
-		year: 2023,
-		month: 12,
-		title: "2023年12月度 月次報告",
-		updatedAt: "2023/12/31",
-	},
-	{
-		id: "5",
-		year: 2023,
-		month: 11,
-		title: "2023年11月度 月次報告",
-		updatedAt: "2023/11/30",
-	},
-];
+export async function clientLoader() {
+	const reports = await getMonthlyReports(new Date().getFullYear());
 
-const MonthlyReports: React.FC = () => {
-	// 年度ごとにレポートをグループ化
-	const reportsByYear = sampleReports.reduce(
-		(acc, report) => {
-			const year = report.year;
-			if (!acc[year]) {
-				acc[year] = [];
-			}
-			acc[year].push(report);
-			return acc;
-		},
-		{} as Record<number, MonthlyReport[]>,
-	);
+	if (reports === 401) {
+		localStorage.removeItem("user");
+		return redirect("/login");
+	}
 
-	// 年度の降順でソート
-	const years = Object.keys(reportsByYear)
-		.map(Number)
-		.sort((a, b) => b - a);
+	if (reports === 500) {
+		console.error("サーバーエラー");
+		throw data("サーバー側でエラーが起きました。", { status: 500 });
+	}
+
+	return reports as Report[];
+}
+
+const MonthlyReports: React.FC<Route.ComponentProps> = ({ loaderData }) => {
+	const {
+		reports,
+		selectedYear,
+		isLoading,
+		error,
+		handlePrevMonth,
+		handleNextMonth,
+	} = useMonthlyReports(loaderData);
+
+	if (error) {
+		return <div className="text-red-500 p-4">{error}</div>;
+	}
 
 	return (
 		<div className="p-4">
-			{years.map((year) => (
-				<div key={year}>
-					<div className="divider text-xl font-semibold">{year}年度</div>
-					<ReportTable reports={reportsByYear[year]} type="monthly" />
+			<div className="w-full">
+				<div className="mb-8 flex flex-col gap-4">
+					<div className="divider text-xl font-semibold">
+						<button
+							className="btn btn-ghost"
+							onClick={handlePrevMonth}
+							disabled={isLoading}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								height="36px"
+								viewBox="0 -960 960 960"
+								width="36px"
+								fill="#5f6368"
+							>
+								<path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z" />
+							</svg>
+						</button>
+						{selectedYear}年
+						<button
+							className="btn btn-ghost"
+							onClick={handleNextMonth}
+							disabled={isLoading}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								height="36px"
+								viewBox="0 -960 960 960"
+								width="36px"
+								fill="#5f6368"
+							>
+								<path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" />
+							</svg>
+						</button>
+					</div>
+					{isLoading ? (
+						<div className="flex w-full flex-col gap-4">
+							<div className="skeleton h-4 w-full"></div>
+							<div className="skeleton h-72 w-full"></div>
+						</div>
+					) : (
+						<ReportTable reports={reports} type="monthly" />
+					)}
 				</div>
-			))}
+			</div>
 		</div>
 	);
 };

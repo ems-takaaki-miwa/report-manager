@@ -37,7 +37,7 @@ const api = new Hono<{ Bindings: Bindings }>()
 	})
 
 	// 月報取得
-	.get(
+	.post(
 		"/monthly-reports",
 		zValidator("json", MonthlyReportsParam),
 		async (c) => {
@@ -48,7 +48,7 @@ const api = new Hono<{ Bindings: Bindings }>()
 	)
 
 	// 年報取得
-	.get("/annual-reports", async (c) => {
+	.post("/annual-reports", async (c) => {
 		const reports = await model.getAnnualReports(c.env.DB);
 		return c.json({ reports: reports, ok: true });
 	})

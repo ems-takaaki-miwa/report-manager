@@ -3,11 +3,11 @@ import ReportTable, { type Report } from "../components/reportTable";
 import type { Route } from "./+types/dailyReports";
 import { useDailyReports } from "../hooks/useDailyReports";
 import { formatYearMonth, getCurrentYearMonth } from "../lib/utils/dateUtils";
-import { getDailyReport } from "../lib/api/reportApi";
+import { getDailyReports } from "../lib/api/reportApi";
 
 export async function clientLoader() {
 	const { year, month } = getCurrentYearMonth();
-	const reports = await getDailyReport(month, year);
+	const reports = await getDailyReports(month, year);
 
 	if (reports === 401) {
 		localStorage.removeItem("user");
