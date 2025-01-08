@@ -22,6 +22,7 @@ export const createUser = async (
 	D1: D1Database,
 	userId: string,
 	name: string,
+	role: string,
 	password: string,
 ): Promise<boolean> => {
 	const db = drizzle(D1);
@@ -33,6 +34,7 @@ export const createUser = async (
 		await db.insert(users).values({
 			id: userId,
 			name: name,
+			role: role,
 			hashedPassword: hashedPassword,
 		});
 

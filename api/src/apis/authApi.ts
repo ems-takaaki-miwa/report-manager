@@ -14,6 +14,7 @@ const LoginParam = z.object({
 const RegisterParam = z.object({
 	userId: z.string(),
 	name: z.string(),
+	role: z.string(),
 	password: z.string(),
 });
 
@@ -78,6 +79,7 @@ const api = new Hono<{ Bindings: Bindings }>()
 				c.env.DB,
 				param.userId,
 				param.name,
+				param.role,
 				param.password,
 			);
 
