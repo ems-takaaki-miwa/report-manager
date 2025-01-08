@@ -3,6 +3,7 @@ import { useState } from "react";
 import { userAtom } from "~/atoms";
 import { UploadButton } from "~/components/ui/uploadButton";
 import { hono } from "~/lib/hono";
+import { useToast } from "~/hooks/use-toast";
 
 export default function UploadReport() {
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -18,6 +19,7 @@ export default function UploadReport() {
 	function getDaysInMonth(year: number, month: number): number {
 		return new Date(year, month, 0).getDate();
 	}
+	const { toast } = useToast();
 
 	const UploadReport = async (formData: FormData) => {
 		const type: string = (await formData.get("type")) as string;
@@ -45,8 +47,17 @@ export default function UploadReport() {
 			);
 			if (response.ok) {
 				const data = await response.json();
+				toast({
+					title: "アップロード成功",
+					description: "レポートをアップロードしました。",
+				})
 				console.log(data);
 			} else {
+				toast({
+					variant: "error",
+					title: "アップロード失敗",
+					description: "レポートのアップロードに失敗しました。",
+				})
 				console.error("Failed to upload report");
 			}
 		} catch (error) {
