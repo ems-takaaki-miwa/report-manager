@@ -1,9 +1,9 @@
-import { Link } from "react-router";
+import { useAtom } from "jotai/react";
 import { useRef } from "react";
+import { Link } from "react-router";
+import { userAtom } from "~/atoms";
 import SearchDialog from "./searchDialog";
 import { LogoutButton } from "./ui/logoutButton";
-import { useAtom } from "jotai/react";
-import { userAtom } from "~/atoms";
 
 export const Header: React.FC = () => {
 	const dialog = useRef<HTMLDialogElement | null>(null);
@@ -22,7 +22,11 @@ export const Header: React.FC = () => {
 			</div>
 			{user && (
 				<div className="flex gap-2">
+					<Link to="/upload-report" className="btn btn-ghost">
+						アップロード
+					</Link>
 					<button
+						type="button"
 						className="btn btn-ghost btn-circle"
 						onClick={handleSearchClick}
 					>
@@ -33,6 +37,7 @@ export const Header: React.FC = () => {
 							viewBox="0 0 24 24"
 							stroke="currentColor"
 						>
+							<title>検索</title>
 							<path
 								strokeLinecap="round"
 								strokeLinejoin="round"
@@ -43,13 +48,10 @@ export const Header: React.FC = () => {
 					</button>
 					<SearchDialog ref={dialog} />
 					<div className="dropdown dropdown-end">
-						<div tabIndex={0} role="button" className="btn btn-ghost">
+						<button type="button" tabIndex={0} className="btn btn-ghost">
 							<span>{user.name}</span>
-						</div>
-						<ul
-							tabIndex={0}
-							className="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow"
-						>
+						</button>
+						<ul className="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow">
 							<li>
 								<LogoutButton />
 							</li>
