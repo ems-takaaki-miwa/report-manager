@@ -1,17 +1,17 @@
-import React from "react";
-import { hono } from "~/lib/hono";
-import { useNavigate, redirect } from "react-router";
+import { useAtom } from "jotai/react";
+import type React from "react";
+import { redirect, useNavigate } from "react-router";
+import { userAtom } from "~/atoms";
 import { Alert } from "~/components/ui/alert";
 import { LoginButton } from "~/components/ui/loginButton";
-import { useAtom } from "jotai/react";
-import { userAtom } from "~/atoms";
+import { hono } from "~/lib/hono";
 
 export async function clientLoader() {
 	// ここでログインしてるかをチェックする
 	// ログインしていない場合はリダイレクトする
 	const user = localStorage.getItem("user");
 	console.log(user);
-	if (user != null && user != "null") {
+	if (user != null && user !== "null") {
 		return redirect("/");
 	}
 	return null;
@@ -55,34 +55,20 @@ const Login: React.FC = () => {
 	}
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-full">
-			<form action={login}>
-				<fieldset className="fieldset w-xs border border-base-300 p-4 rounded-box shadow-sm">
-					<legend className="fieldset-legend">ログイン</legend>
-					{/* {fetcher.data?.error && (
-						<Alert message={fetcher.data.error} isVisible={true} />
-					)} */}
-					<label className="fieldset-label">User ID</label>
-					<input
-						name="userId"
-						className="input validator"
-						placeholder="User ID"
-						required
-					/>
-					<div className="validator-hint hidden">入力してください</div>
+		<div className="flex flex-col items-center justify-center min-h-full w-full">
+			<h2 className="text-lg font-bold my-4">ログイン</h2>
+			<form action={login} className="flex flex-col gap-4 w-full sm:w-96">
+				<label className="input w-full">
+					<span className="label">User ID</span>
+					<input name="userId" className="" required />
+				</label>
 
-					<label className="fieldset-label">Password</label>
-					<input
-						name="password"
-						type="password"
-						className="input validator"
-						placeholder="Password"
-						required
-					/>
-					<div className="validator-hint hidden">入力してください</div>
+				<label className="input w-full">
+					<span className="label">Password</span>
+					<input name="password" type="password" className="w-full" required />
+				</label>
 
-					<LoginButton />
-				</fieldset>
+				<LoginButton />
 			</form>
 		</div>
 	);
