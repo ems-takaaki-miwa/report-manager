@@ -6,7 +6,9 @@ import { hono } from "~/lib/hono";
 import { useToast } from "~/hooks/use-toast";
 
 export default function UploadReport() {
+	const [reportType, setReportType] = useState<string>("");
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [inputTitle, setInputTitle] = useState<string>("");
 	const [selectedYear, setSelectedYear] = useState<number>(
 		new Date().getFullYear(),
 	);
@@ -14,7 +16,6 @@ export default function UploadReport() {
 		new Date().getMonth() + 1,
 	);
 	const [user, setUserAtom] = useAtom(userAtom);
-	const [reportType, setReportType] = useState<string>("");
 
 	function getDaysInMonth(year: number, month: number): number {
 		return new Date(year, month, 0).getDate();
@@ -51,7 +52,9 @@ export default function UploadReport() {
 					title: "アップロード成功",
 					description: "レポートをアップロードしました。",
 				})
-				console.log(data);
+				setReportType("");
+				setSelectedFile(null);
+				setInputTitle("");
 			} else {
 				toast({
 					variant: "error",

@@ -35,3 +35,7 @@ export const getNextMonth = (year: number, month: number) => {
 export const formatYearMonth = (year: number, month: number) => {
 	return `${year}年${month}月`;
 };
+
+export function getDaysInMonth(year: number, month: number): number {
+  return new Date(year, month, 0).getDate();
+}
