@@ -27,7 +27,6 @@ const api = new Hono<{ Bindings: Bindings }>()
 
 	// 日報取得
 	.post("/daily-reports", zValidator("json", DailyReportsParam), async (c) => {
-		return c.json({ error: "Can not create new file", ok: false }, 500);
 		const param = c.req.valid("json");
 		const reports = await model.getDailyReportsByYearMonth(
 			c.env.DB,
