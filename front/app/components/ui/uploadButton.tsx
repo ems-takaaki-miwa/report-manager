@@ -1,14 +1,24 @@
 import { useFormStatus } from "react-dom";
 
-export const UploadButton: React.FC = () => {
-	const { pending } = useFormStatus();
-	return (
-		<button type="submit" className="btn btn-primary mt-4" disabled={pending}>
-			{pending ? (
-				<span className="loading loading-spinner loading-md" />
-			) : (
-				"アップロード"
-			)}
-		</button>
-	);
+interface UploadButtonProps {
+  disabled?: boolean;
+}
+
+export const UploadButton: React.FC<UploadButtonProps> = ({ disabled }) => {
+  const { pending } = useFormStatus();
+  const isDisabled = disabled || pending;
+  
+  return (
+    <button 
+      type="submit" 
+      className="btn btn-primary mt-4" 
+      disabled={isDisabled}
+    >
+      {isDisabled ? (
+        <span className="loading loading-spinner loading-md" />
+      ) : (
+        "アップロード"
+      )}
+    </button>
+  );
 };
