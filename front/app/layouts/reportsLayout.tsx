@@ -5,7 +5,7 @@ export async function clientLoader() {
 	// ここでログインしてるかをチェックする
 	// ログインしていない場合はリダイレクトする
 	const user = localStorage.getItem("user");
-	if (user == "null") {
+	if (user == null || user == "null") {
 		return redirect("/login");
 	}
 	return null;
@@ -18,7 +18,10 @@ const ReportsLayout: React.FC = () => {
 
 	return (
 		<div className="w-full bg-base-200">
-			<div role="tablist" className="tabs tabs-border sticky top-0  z-10 p-4">
+			<div
+				role="tablist"
+				className="tabs tabs-border bg-base-200 sticky top-0  z-10 p-4"
+			>
 				<NavLink
 					to="/"
 					role="tab"

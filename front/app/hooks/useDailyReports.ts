@@ -1,69 +1,82 @@
-import { useState, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router";
-import { getDailyReports } from "../lib/api/reportApi";
+import { hono } from "~/lib/hono";
+import { getStorageUser, removeStorageUser } from "~/lib/utils";
+import type { Report } from "../components/reportTable";
 import {
 	getCurrentYearMonth,
-	getPrevMonth,
 	getNextMonth,
+	getPrevMonth,
 } from "../lib/utils/dateUtils";
-import { type Report } from "../components/reportTable";
 
-export const useDailyReports = (initialData: Report[]) => {
+export const useDailyReports = () => {
 	const navigate = useNavigate();
 	const { year: currentYear, month: currentMonth } = getCurrentYearMonth();
+	const user = getStorageUser();
 
-	const [reports, setReports] = useState<Report[]>(initialData);
 	const [selectedYear, setSelectedYear] = useState<number>(currentYear);
 	const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
 
 	const fetchReports = useCallback(
-		async (year: number, month: number) => {
-			setIsLoading(true);
-			setError(null);
+		async (year: number, month: number): Promise<Report[]> => {
+			const response = await hono.api.reports["daily-reports"].$post(
+				{
+					json: {
+						year,
+						month,
+					},
+				},
+				{
+					headers: {
+						"Session-Id": user?.sessionId || "",
+					},
+				},
+			);
 
-			try {
-				const result = await getDailyReports(month, year);
-
-				if (result === 401) {
+			setSelectedYear(year);
+			setSelectedMonth(month);
+			if (response.ok) {
+				const data = await response.json();
+				return data.reports.sort((a, b) => b.day - a.day) as Report[];
+			}
+			switch (response.status) {
+				case 401:
+					removeStorageUser();
 					navigate("/login");
-					return;
-				}
-
-				if (result === 500) {
-					setError("サーバーエラーが発生しました");
-					return;
-				}
-
-				setReports(result as Report[]);
-				setSelectedYear(year);
-				setSelectedMonth(month);
-			} catch (err) {
-				setError("データの取得に失敗しました");
-				console.error(err);
-			} finally {
-				setIsLoading(false);
+					throw new Error("セッションの有効期限が切れました。");
+				case 500:
+					throw new Error("サーバーエラーが発生しました");
+				default:
+					throw new Error("不明なエラーが発生しました");
 			}
 		},
-		[selectedMonth, selectedYear],
+		[navigate, user],
 	);
+
+	const { data, error, isLoading, isError } = useQuery({
+		queryKey: ["getDailyReports", selectedYear, selectedMonth],
+		queryFn: () => fetchReports(selectedYear, selectedMonth),
+	});
 
 	const handlePrevMonth = useCallback(async () => {
 		const { year, month } = getPrevMonth(selectedYear, selectedMonth);
-		await fetchReports(year, month);
+		setSelectedYear(year);
+		setSelectedMonth(month);
 	}, [selectedYear, selectedMonth]);
 
 	const handleNextMonth = useCallback(async () => {
 		const { year, month } = getNextMonth(selectedYear, selectedMonth);
-		await fetchReports(year, month);
+		setSelectedYear(year);
+		setSelectedMonth(month);
 	}, [selectedYear, selectedMonth]);
 
 	return {
-		reports,
+		data,
 		selectedYear,
 		selectedMonth,
 		isLoading,
+		isError,
 		error,
 		handlePrevMonth,
 		handleNextMonth,

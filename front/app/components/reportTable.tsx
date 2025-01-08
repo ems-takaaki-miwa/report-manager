@@ -38,6 +38,12 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, type }) => {
 		}
 	};
 
+	const formatDate = (dateString: string | null): string => {
+		if (!dateString) return "";
+		const date = new Date(dateString);
+		return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`;
+	};
+
 	return (
 		<div className="overflow-x-auto w-full">
 			<table className="table bg-base-100 w-full">
@@ -57,7 +63,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, type }) => {
 							</td>
 							<td className="text-center break-all">{report.title}</td>
 							<td className="text-center whitespace-nowrap">
-								{report.updatedAt}
+								{formatDate(report.updatedAt)}
 							</td>
 							<td className="text-center whitespace-nowrap">
 								<button className="btn btn-primary btn-sm">

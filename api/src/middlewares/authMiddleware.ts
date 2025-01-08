@@ -13,7 +13,8 @@ export const checkSession = createMiddleware<{ Bindings: Bindings }>(
 		);
 
 		const sessionId = c.req.header("Session-Id");
-		if (sessionId == null) {
+		console.log(typeof sessionId);
+		if (!sessionId || sessionId.trim() === "") {
 			return errorResponse;
 		}
 		try {
@@ -29,6 +30,7 @@ export const checkSession = createMiddleware<{ Bindings: Bindings }>(
 			}
 			await next();
 		} catch (e) {
+			console.log(e);
 			return c.json({ error: "An error occurred during session check" }, 500);
 		}
 	},

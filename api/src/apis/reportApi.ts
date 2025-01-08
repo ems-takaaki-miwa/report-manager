@@ -1,9 +1,9 @@
-import { Hono } from "hono";
-import { Bindings } from "../bindings";
-import * as model from "../models/reportModel";
-import { checkSession } from "../middlewares/authMiddleware";
 import { zValidator } from "@hono/zod-validator";
+import { Hono } from "hono";
 import { z } from "zod";
+import { Bindings } from "../bindings";
+import { checkSession } from "../middlewares/authMiddleware";
+import * as model from "../models/reportModel";
 
 const DailyReportsParam = z.object({
 	month: z.coerce.number(),
@@ -27,6 +27,7 @@ const api = new Hono<{ Bindings: Bindings }>()
 
 	// 日報取得
 	.post("/daily-reports", zValidator("json", DailyReportsParam), async (c) => {
+		return c.json({ error: "Can not create new file", ok: false }, 500);
 		const param = c.req.valid("json");
 		const reports = await model.getDailyReportsByYearMonth(
 			c.env.DB,
@@ -56,11 +57,11 @@ const api = new Hono<{ Bindings: Bindings }>()
 	// ファイル作成
 	.post("/", zValidator("json", model.reportInsertSchema), async (c) => {
 		const param = c.req.valid("json");
-		const newFile = await model.createReport(c.env.DB, param);
-		if (!newFile) {
+		const report = await model.createReport(c.env.DB, param);
+		if (!report) {
 			return c.json({ error: "Can not create new file", ok: false }, 422);
 		}
-		return c.json({ post: newFile, ok: true }, 201);
+		return c.json({ report, ok: true }, 201);
 	})
 
 	// ファイル削除
