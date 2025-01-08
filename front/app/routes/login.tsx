@@ -25,7 +25,6 @@ const Login: React.FC = () => {
 		const userId = await formData.get("userId");
 		const password = await formData.get("password");
 		// ログイン処理をここに追加
-		await new Promise((res) => setTimeout(res, 1000));
 		try {
 			const response = await hono.api.auth.login.$post({
 				json: {

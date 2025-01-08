@@ -54,7 +54,7 @@ const api = new Hono<{ Bindings: Bindings }>()
 	})
 
 	// ファイル作成
-	.post("/", zValidator("json", model.reportInsertSchema), async (c) => {
+	.post("/create", zValidator("json", model.reportInsertSchema), async (c) => {
 		const param = c.req.valid("json");
 		const report = await model.createReport(c.env.DB, param);
 		if (!report) {
