@@ -1,11 +1,12 @@
-import React from "react";
-import { Outlet, NavLink, redirect } from "react-router";
+import type React from "react";
+import { NavLink, Outlet, redirect } from "react-router";
+import { getStorageUser } from "~/lib/utils";
 
 export async function clientLoader() {
 	// ここでログインしてるかをチェックする
 	// ログインしていない場合はリダイレクトする
-	const user = localStorage.getItem("user");
-	if (user == null || user == "null") {
+	const user = getStorageUser();
+	if (user == null) {
 		return redirect("/login");
 	}
 	return null;
@@ -17,10 +18,10 @@ const ReportsLayout: React.FC = () => {
 	};
 
 	return (
-		<div className="w-full bg-base-200">
+		<div className="my-4 w-full bg-base-200 rounded-lg">
 			<div
 				role="tablist"
-				className="tabs tabs-border bg-base-200 sticky top-0  z-10 p-4"
+				className="tabs tabs-border bg-base-200 rounded-lg sticky top-0  z-10 p-4"
 			>
 				<NavLink
 					to="/"
