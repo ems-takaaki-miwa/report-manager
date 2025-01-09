@@ -86,5 +86,6 @@ const api = new Hono<{ Bindings: Bindings }>()
 			return c.json({ report: deleteReport, ok: true }, 201);
 		},
 	);
+	///テスト
 
 export default api;
