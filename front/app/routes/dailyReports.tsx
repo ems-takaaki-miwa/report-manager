@@ -1,3 +1,5 @@
+import { useAtom } from "jotai";
+import { currentPageAtom } from "~/atoms";
 import ReportTable from "../components/reportTable";
 import { useDailyReports } from "../hooks/useDailyReports";
 import { formatYearMonth } from "../lib/utils/dateUtils";

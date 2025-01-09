@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAtom } from "jotai";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router";
+import { currentPageAtom } from "~/atoms";
 import { hono } from "~/lib/hono";
 import { getStorageUser, removeStorageUser } from "~/lib/utils";
-import type { Report } from "../components/reportTable";
+import { GetReportsQueryKey, type Report } from "~/types/report";
 
 export const useMonthlyReports = () => {
 	const navigate = useNavigate();
@@ -11,6 +13,7 @@ export const useMonthlyReports = () => {
 	const [selectedYear, setSelectedYear] = useState<number>(
 		new Date().getFullYear(),
 	);
+	const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
 
 	const fetchReports = useCallback(
 		async (year: number): Promise<Report[]> => {
@@ -28,6 +31,10 @@ export const useMonthlyReports = () => {
 			);
 
 			setSelectedYear(year);
+			setCurrentPage({
+				reportType: "monthly",
+				year,
+			});
 			if (response.ok) {
 				const data = await response.json();
 				return data.reports.sort((a, b) => b.month - a.month) as Report[];
@@ -43,11 +50,11 @@ export const useMonthlyReports = () => {
 					throw new Error("不明なエラーが発生しました");
 			}
 		},
-		[navigate, user],
+		[navigate, user, setCurrentPage],
 	);
 
 	const { data, error, isLoading, isError } = useQuery({
-		queryKey: ["getDailyReports", selectedYear],
+		queryKey: [GetReportsQueryKey.MONTHLY, selectedYear],
 		queryFn: () => fetchReports(selectedYear),
 	});
 

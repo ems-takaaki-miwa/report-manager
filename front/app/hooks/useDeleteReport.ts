@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAtom } from "jotai";
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
+import { currentPageAtom } from "~/atoms";
 import { hono } from "~/lib/hono";
-import { getStorageUser, removeStorageUser } from "~/lib/utils";
+import { GetQueryKey, getStorageUser, removeStorageUser } from "~/lib/utils";
 import type { Report } from "~/types/report";
 import { useToast } from "./use-toast";
 
@@ -14,6 +16,7 @@ export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 	const navigate = useNavigate();
 	const user = getStorageUser();
 	const { toast } = useToast();
+	const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
 	const queryClient = useQueryClient();
 
 	const editReport = useCallback(
@@ -62,7 +65,7 @@ export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 	const { mutate, data, error, isPending } = useMutation({
 		mutationFn: editReport,
 		onSuccess: () => {
-			// queryClient.invalidateQueries({ queryKey: ["reports"] });
+			queryClient.invalidateQueries({ queryKey: GetQueryKey(currentPage) });
 			ref.current?.close();
 		},
 	});

@@ -1,10 +1,17 @@
 import { useAtom } from "jotai/react";
+import { useRef } from "react";
 import { Link } from "react-router";
 import { userAtom } from "~/atoms";
+import { useUploadReport } from "~/hooks/useUploadReport";
+import { ReportFormModal } from "./reportFormModal";
 import { LogoutButton } from "./ui/logoutButton";
 
 export const Header: React.FC = () => {
 	const [user, setUser] = useAtom(userAtom);
+	const reportFormModalRef = useRef<HTMLDialogElement | null>(null);
+	const { mutate, isPending } = useUploadReport({
+		ref: reportFormModalRef,
+	});
 
 	return (
 		<div className="navbar shadow-sm">
@@ -15,9 +22,19 @@ export const Header: React.FC = () => {
 			</div>
 			{user && (
 				<div className="flex gap-2">
-					<Link to="/upload-report" className="btn btn-ghost">
+					<button
+						type="button"
+						className="btn btn-ghost"
+						onClick={() => reportFormModalRef.current?.showModal()}
+					>
 						アップロード
-					</Link>
+					</button>
+					<ReportFormModal
+						ref={reportFormModalRef}
+						usecase="upload"
+						submitAction={mutate}
+						isLoading={isPending}
+					/>
 					<div className="dropdown dropdown-end">
 						<button type="button" tabIndex={0} className="btn btn-ghost">
 							<span>{user.name}</span>

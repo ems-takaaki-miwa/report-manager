@@ -1,3 +1,5 @@
+import type { UseFormReset } from "react-hook-form";
+
 export type Report = {
 	id: number;
 	type: ReportType;
@@ -11,3 +13,22 @@ export type Report = {
 };
 
 export type ReportType = "daily" | "monthly" | "annual";
+
+export const GetReportsQueryKey = {
+	DAILY: "getDailyReports",
+	MONTHLY: "getMonthlyReports",
+	ANNUAL: "getAnnualReports",
+} as const;
+
+export type FormActionProps = {
+	report: Report;
+	reset: UseFormReset<{
+		type: "daily" | "monthly" | "annual";
+		title: string;
+		year: number;
+		month: number;
+		day: number;
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		file?: any;
+	}>;
+};

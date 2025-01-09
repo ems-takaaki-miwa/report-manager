@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { getReportTypeLabel } from "~/lib/utils";
 import { formatDate } from "~/lib/utils/dateUtils";
 import type { Report } from "~/types/report";
 import { useDeleteReport } from "../hooks/useDeleteReport";
@@ -6,19 +6,6 @@ import { useDeleteReport } from "../hooks/useDeleteReport";
 type DeleteModalProps = {
 	ref: React.RefObject<HTMLDialogElement | null>;
 	report: Report;
-};
-
-const getReportTypeLabel = (type: string) => {
-	switch (type) {
-		case "daily":
-			return "日報";
-		case "monthly":
-			return "月報";
-		case "annual":
-			return "年報";
-		default:
-			return type;
-	}
 };
 
 export const DeleteReportModal: React.FC<DeleteModalProps> = ({

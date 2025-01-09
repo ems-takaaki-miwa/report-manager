@@ -1,26 +1,35 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAtom } from "jotai";
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
+import { currentPageAtom } from "~/atoms";
 import { hono } from "~/lib/hono";
-import { getStorageUser, removeStorageUser } from "~/lib/utils";
-import type { Report } from "~/types/report";
+import { GetQueryKey, getStorageUser, removeStorageUser } from "~/lib/utils";
+import type { FormActionProps, Report } from "~/types/report";
 import { useToast } from "./use-toast";
 
-export const useUploadReport = () => {
+type useUploadProps = {
+	ref: React.RefObject<HTMLDialogElement | null>;
+};
+
+export const useUploadReport = ({ ref }: useUploadProps) => {
 	const navigate = useNavigate();
 	const user = getStorageUser();
 	const { toast } = useToast();
+	const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
+	const queryClient = useQueryClient();
 
 	const uploadReport = useCallback(
-		async (report: Report) => {
+		async (props: FormActionProps) => {
+			console.log("uploadReport");
 			const response = await hono.api.reports.create.$post(
 				{
 					json: {
-						title: report.title,
-						day: report.day,
-						month: report.month,
-						year: report.year,
-						type: report.type,
+						title: props.report.title,
+						day: props.report.day,
+						month: props.report.month,
+						year: props.report.year,
+						type: props.report.type,
 						uploaderId: user?.id || "",
 					},
 				},
@@ -31,14 +40,13 @@ export const useUploadReport = () => {
 				},
 			);
 			if (response.ok) {
+				console.log("uploadReport success");
+				props.reset();
 				const data = await response.json();
-				toast({
-					title: "success",
-					description: "更新が完了しました",
-					variant: "info",
-				});
+
 				return data.report as Report;
 			}
+			console.log("uploadReport error");
 			const status: number = response.status;
 			switch (status) {
 				case 400:
@@ -55,11 +63,25 @@ export const useUploadReport = () => {
 					throw new Error("不明なエラーが発生しました");
 			}
 		},
-		[navigate, user, toast],
+		[navigate, user],
 	);
 
 	const { mutate, data, error, isPending } = useMutation({
 		mutationFn: uploadReport,
+		onSuccess: (data) => {
+			toast({
+				title: "success",
+				description: "更新が完了しました",
+				variant: "info",
+			});
+			console.log(currentPage?.reportType);
+			console.log(data.type);
+			if (currentPage?.reportType === data.type) {
+				console.log("aaa");
+				queryClient.invalidateQueries({ queryKey: GetQueryKey(currentPage) });
+			}
+			ref.current?.close();
+		},
 	});
 
 	return {

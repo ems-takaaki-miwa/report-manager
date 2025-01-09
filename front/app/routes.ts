@@ -13,7 +13,6 @@ export default [
 			route("monthly-reports", "routes/monthlyReports.tsx"),
 			route("annual-reports", "routes/annualReports.tsx"),
 		]),
-		route("upload-report", "routes/uploadReport.tsx"),
 		route("edit-report", "routes/editReport.tsx"),
 	]),
 ] satisfies RouteConfig;
