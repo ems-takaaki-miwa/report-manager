@@ -1,4 +1,6 @@
-export const ReportMenuButton: React.FC = () => {
+import type { Report } from "../reportTable";
+
+export const ReportMenuButton: React.FC<Report> = (report) => {
 	return (
 		<div className="dropdown dropdown-end">
 			<button type="button" className="btn btn-ghost btn-sm">
