@@ -76,6 +76,7 @@ export const useUploadReport = ({ ref }: useUploadProps) => {
 			});
 			if (currentPage?.reportType === data.type) {
 				queryClient.invalidateQueries({ queryKey: GetQueryKey(currentPage) });
+				// await queryClient.refetchQueries({ queryKey: GetQueryKey(currentPage) });
 			}
 			ref.current?.close();
 		},

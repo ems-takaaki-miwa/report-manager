@@ -11,8 +11,8 @@ export interface User {
 
 export interface CurrentPage {
 	reportType: ReportType;
-	year?: number;
-	month?: number;
+	year: number;
+	month: number;
 }
 
 export const userAtom = atomWithStorage<User | null>("user", null);

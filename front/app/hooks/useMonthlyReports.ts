@@ -34,6 +34,7 @@ export const useMonthlyReports = () => {
 			setCurrentPage({
 				reportType: "monthly",
 				year,
+				month: 0,
 			});
 			if (response.ok) {
 				const data = await response.json();

@@ -21,50 +21,45 @@ export const useDailyReports = () => {
 	const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
 	const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
 
-	const fetchReports = useCallback(
-		async (year: number, month: number): Promise<Report[]> => {
-			const response = await hono.api.reports["daily-reports"].$post(
-				{
-					json: {
-						year,
-						month,
-					},
+	const fetchReports = useCallback(async (): Promise<Report[]> => {
+		const response = await hono.api.reports["daily-reports"].$post(
+			{
+				json: {
+					year: selectedYear,
+					month: selectedMonth,
 				},
-				{
-					headers: {
-						"Session-Id": user?.sessionId || "",
-					},
+			},
+			{
+				headers: {
+					"Session-Id": user?.sessionId || "",
 				},
-			);
+			},
+		);
 
-			setSelectedYear(year);
-			setSelectedMonth(month);
-			setCurrentPage({
-				reportType: "daily",
-				year,
-				month,
-			});
-			if (response.ok) {
-				const data = await response.json();
-				return data.reports.sort((a, b) => b.day - a.day) as Report[];
-			}
-			switch (response.status) {
-				case 401:
-					removeStorageUser();
-					navigate("/login");
-					throw new Error("セッションの有効期限が切れました。");
-				case 500:
-					throw new Error("サーバーエラーが発生しました");
-				default:
-					throw new Error("不明なエラーが発生しました");
-			}
-		},
-		[navigate, user, setCurrentPage],
-	);
+		setCurrentPage({
+			reportType: "daily",
+			year: selectedYear,
+			month: selectedMonth,
+		});
+		if (response.ok) {
+			const data = await response.json();
+			return data.reports.sort((a, b) => b.day - a.day) as Report[];
+		}
+		switch (response.status) {
+			case 401:
+				removeStorageUser();
+				navigate("/login");
+				throw new Error("セッションの有効期限が切れました。");
+			case 500:
+				throw new Error("サーバーエラーが発生しました");
+			default:
+				throw new Error("不明なエラーが発生しました");
+		}
+	}, [navigate, user, setCurrentPage]);
 
 	const { data, error, isLoading, isError } = useQuery({
 		queryKey: [GetReportsQueryKey.DAILY, selectedYear, selectedMonth],
-		queryFn: () => fetchReports(selectedYear, selectedMonth),
+		queryFn: () => fetchReports(),
 	});
 
 	const handlePrevMonth = useCallback(async () => {

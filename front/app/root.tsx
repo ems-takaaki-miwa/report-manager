@@ -36,6 +36,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	// Create a client
 	const queryClient = new QueryClient({
 		queryCache: new QueryCache({
+			// onSuccess: () => {
+			// 	toast({
+			// 		title: "成功しました",
+			// 		description: "データの取得が完了しました",
+			// 		variant: "info",
+			// 	});
+			// },
 			onError: (error) => {
 				toast({
 					title: "エラーが発生しました",

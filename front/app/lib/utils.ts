@@ -20,12 +20,13 @@ export const removeStorageUser = () => {
 export const GetQueryKey = (page: CurrentPage | null) => {
 	if (!page) return [];
 	switch (page.reportType) {
+		case "daily":
+			return [GetReportsQueryKey.DAILY, page.year, page.month];
 		case "annual":
+			console.log("GetReportsQueryKey.ANNUAL");
 			return [GetReportsQueryKey.ANNUAL];
 		case "monthly":
 			return [GetReportsQueryKey.MONTHLY, page.year];
-		default:
-			return [GetReportsQueryKey.DAILY, page.year, page.month];
 	}
 };
 

@@ -21,7 +21,7 @@ export const useAnnualReports = () => {
 				},
 			},
 		);
-		setCurrentPage({ reportType: "annual" });
+		setCurrentPage({ reportType: "annual", year: 0, month: 0 });
 		if (response.ok) {
 			const data = await response.json();
 			return data.reports as Report[];

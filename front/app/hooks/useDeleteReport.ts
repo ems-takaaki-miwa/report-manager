@@ -21,7 +21,7 @@ export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 
 	const editReport = useCallback(
 		async (report: Report) => {
-			await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second delay
+			// await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second delay
 			const response = await hono.api.reports.delete.$post(
 				{
 					json: {
@@ -64,8 +64,9 @@ export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 
 	const { mutate, data, error, isPending } = useMutation({
 		mutationFn: editReport,
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: GetQueryKey(currentPage) });
+		onSuccess: async () => {
+			console.log(GetQueryKey(currentPage));
+			await queryClient.refetchQueries({ queryKey: GetQueryKey(currentPage) });
 			ref.current?.close();
 		},
 	});
