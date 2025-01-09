@@ -37,5 +37,5 @@ export const formatYearMonth = (year: number, month: number) => {
 };
 
 export function getDaysInMonth(year: number, month: number): number {
-  return new Date(year, month, 0).getDate();
+	return new Date(year, month, 0).getDate();
 }

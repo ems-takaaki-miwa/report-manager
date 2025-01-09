@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
-import { Bindings } from "../bindings";
+import type { Bindings } from "../bindings";
 import { checkSession } from "../middlewares/authMiddleware";
 import * as model from "../models/reportModel";
 

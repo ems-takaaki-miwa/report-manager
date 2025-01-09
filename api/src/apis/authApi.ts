@@ -1,10 +1,10 @@
-import { Hono } from "hono";
-import { Bindings } from "../bindings";
-import * as userModel from "../models/userModel";
-import * as sessionModel from "../models/sessionModel";
-import { checkSession } from "../middlewares/authMiddleware";
 import { zValidator } from "@hono/zod-validator";
+import { Hono } from "hono";
 import { z } from "zod";
+import type { Bindings } from "../bindings";
+import { checkSession } from "../middlewares/authMiddleware";
+import * as sessionModel from "../models/sessionModel";
+import * as userModel from "../models/userModel";
 
 const LoginParam = z.object({
 	userId: z.string(),
@@ -12,10 +12,8 @@ const LoginParam = z.object({
 });
 
 const RegisterParam = z.object({
-	userId: z.string(),
-	name: z.string(),
-	role: z.string(),
 	password: z.string(),
+	...userModel.userInsertSchema.shape,
 });
 
 const api = new Hono<{ Bindings: Bindings }>()
@@ -56,7 +54,7 @@ const api = new Hono<{ Bindings: Bindings }>()
 
 			// ユーザーが取得できた場合、ログイン成功
 			// 必要な情報のみにパースして返す
-			const parsedUser: { id: string; name: string } =
+			const parsedUser: { id: string; name: string; role: "admin" | "user" } =
 				userModel.userSelectSchema.parse(user);
 			return c.json({
 				message: "Login successful",
@@ -77,7 +75,7 @@ const api = new Hono<{ Bindings: Bindings }>()
 			// ユーザーを作成
 			await userModel.createUser(
 				c.env.DB,
-				param.userId,
+				param.id,
 				param.name,
 				param.role,
 				param.password,

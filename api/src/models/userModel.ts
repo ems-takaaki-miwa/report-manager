@@ -1,11 +1,16 @@
+import { and, eq, gte, lt, ne } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { eq, lt, gte, ne, and } from "drizzle-orm";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import type { z } from "zod";
 import { users } from "../db/schema/users";
-import { createSelectSchema, createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
 
 export const userSelectSchema = createSelectSchema(users);
 export type User = z.infer<typeof userSelectSchema>;
+export const userInsertSchema = createInsertSchema(users).omit({
+	hashedPassword: true,
+	createdAt: true,
+	updatedAt: true,
+});
 
 const getHashedPassword = async (password: string): Promise<string> => {
 	return await crypto.subtle
@@ -22,7 +27,7 @@ export const createUser = async (
 	D1: D1Database,
 	userId: string,
 	name: string,
-	role: string,
+	role: "admin" | "user",
 	password: string,
 ): Promise<boolean> => {
 	const db = drizzle(D1);
