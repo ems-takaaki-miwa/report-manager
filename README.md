@@ -44,4 +44,5 @@ Cloudflare Workers Adminでworkers, pages, KV, D1, R2の編集、デプロイ権
   - まとめて、全部エラーをスローする
 - user作成機能を追加
 - mutateのonsuccessでqueryClient.invalidateQueries()をしてもうまくいかない。
-  - 
+- use-toastでビルドがとまる？ので、消してみる
+- tanstack queryの代わりにswrを使う

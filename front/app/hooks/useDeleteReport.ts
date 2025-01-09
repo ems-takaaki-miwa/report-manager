@@ -64,9 +64,9 @@ export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 
 	const { mutate, data, error, isPending } = useMutation({
 		mutationFn: editReport,
-		onSuccess: async () => {
+		onSuccess: () => {
 			console.log(GetQueryKey(currentPage));
-			await queryClient.refetchQueries({ queryKey: GetQueryKey(currentPage) });
+			queryClient.refetchQueries({ queryKey: GetQueryKey(currentPage) });
 			ref.current?.close();
 		},
 	});

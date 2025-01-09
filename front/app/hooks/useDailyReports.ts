@@ -60,6 +60,8 @@ export const useDailyReports = () => {
 	const { data, error, isLoading, isError } = useQuery({
 		queryKey: [GetReportsQueryKey.DAILY, selectedYear, selectedMonth],
 		queryFn: () => fetchReports(),
+		gcTime: 0,
+		staleTime: 0,
 	});
 
 	const handlePrevMonth = useCallback(async () => {
