@@ -1,83 +1,54 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { UseMutateFunction } from "@tanstack/react-query";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import * as z from "zod";
+import type * as z from "zod";
 import { getDaysInMonth } from "~/lib/utils/dateUtils";
+import type { Report } from "~/types/report";
+import { editSchema, uploadSchema } from "~/validations/reportSchema";
 
 type FormProps = {
-	submitAction: (reportData: {
-		title: string;
-		type: string;
-		year: number;
-		month: number;
-		day: number;
-	}) => Promise<void>;
+	submitAction: UseMutateFunction<Report, Error, Report, unknown>;
 	isLoading: boolean;
-	label: string;
+	buttonLabel: string;
+	report?: Report;
+	usecase: "upload" | "edit";
 };
 
-const FormSchema = z.object({
-	type: z.enum(["daily", "monthly", "annual"], {
-		required_error: "種別の選択は必須です",
-	}),
-	file: z
-		.any()
-		.refine((files) => files && files.length > 0, {
-			message: "ファイルを選択してください",
-		})
-		.refine(
-			(files) => {
-				if (!files || files.length === 0) return false;
-				return ["application/pdf"].includes(files[0].type);
-			},
-			{
-				message: "PDFファイルのみアップロード可能です",
-			},
-		),
-	title: z
-		.string()
-		.min(1, "タイトルは必須です")
-		.max(100, "タイトルは100文字以内で入力してください"),
-	year: z
-		.number()
-		.int("年は整数で入力してください")
-		.min(2000, "2000年以降を選択してください")
-		.max(2100, "2100年までを選択してください"),
-	month: z
-		.number()
-		.int("月は整数で入力してください")
-		.min(1, "1月から12月の間で選択してください")
-		.max(12, "1月から12月の間で選択してください"),
-	day: z
-		.number()
-		.int("日は整数で入力してください")
-		.min(1, "1日から31日の間で選択してください")
-		.max(31, "1日から31日の間で選択してください"),
-});
-
-type FormInput = z.infer<typeof FormSchema>;
+type UploadFormInput = z.infer<typeof uploadSchema>;
+type EditFormInput = z.infer<typeof editSchema>;
 
 export const ReportForm: React.FC<FormProps> = ({
 	submitAction,
 	isLoading,
-	label,
+	buttonLabel,
+	report,
+	usecase,
 }) => {
 	const {
 		register,
 		handleSubmit,
 		watch,
 		formState: { errors },
-	} = useForm<FormInput>({
-		resolver: zodResolver(FormSchema),
+	} = useForm<
+		typeof usecase extends "upload" ? UploadFormInput : EditFormInput
+	>({
+		resolver: zodResolver(usecase === "upload" ? uploadSchema : editSchema),
 		defaultValues: {
-			type: "daily",
-			title: "",
-			year: new Date().getFullYear(),
-			month: new Date().getMonth() + 1,
-			day: new Date().getDate(),
+			type: usecase === "edit" ? report?.type : "daily",
+			title: usecase === "edit" ? report?.title : "",
+			year: usecase === "edit" ? report?.year : new Date().getFullYear(),
+			month: usecase === "edit" ? report?.month : new Date().getMonth() + 1,
+			day: usecase === "edit" ? report?.day : new Date().getDate(),
 		},
 	});
-	const onSubmit: SubmitHandler<FormInput> = async (data) => {
+	const onSubmit: SubmitHandler<UploadFormInput | EditFormInput> = async (
+		data,
+	) => {
 		await submitAction({
+			id: usecase === "edit" ? (report?.id ?? 0) : 0,
+			uploaderId: "", // Add appropriate value
+			createdAt: "", // Add appropriate value
+			updatedAt: "", // Add appropriate value
 			title: data.title,
 			type: data.type,
 			year: data.year,
@@ -225,7 +196,7 @@ export const ReportForm: React.FC<FormProps> = ({
 				{isLoading ? (
 					<span className="loading loading-spinner loading-md" />
 				) : (
-					label
+					buttonLabel
 				)}
 			</button>
 		</form>

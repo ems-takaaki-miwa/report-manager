@@ -1,17 +1,7 @@
+import { formatDate } from "~/lib/utils/dateUtils";
+import type { Report } from "~/types/report";
 import { DownloadButton } from "./ui/downloadButton";
 import { ReportMenuButton } from "./ui/reportMenuButton";
-
-export type Report = {
-	id: number;
-	type: string;
-	year: number;
-	month: number;
-	day: number;
-	title: string;
-	uploaderId: string;
-	updatedAt: string | null;
-	createdAt: string | null;
-};
 
 interface ReportTableProps {
 	reports: Report[];
@@ -41,12 +31,6 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, type }) => {
 		}
 	};
 
-	const formatDate = (dateString: string | null): string => {
-		if (!dateString) return "";
-		const date = new Date(dateString);
-		return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`;
-	};
-
 	return (
 		<div className="w-full">
 			<table className="table bg-base-100 w-full">
@@ -69,7 +53,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, type }) => {
 								{formatDate(report.updatedAt)}
 							</td>
 							<td className="text-center whitespace-nowrap">
-								<ReportMenuButton />
+								<ReportMenuButton report={report} />
 							</td>
 						</tr>
 					))}

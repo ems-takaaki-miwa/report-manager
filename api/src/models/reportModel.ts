@@ -1,13 +1,8 @@
+import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { Context } from "hono";
-import { Bindings } from "../bindings";
-import { getCookie } from "hono/cookie";
-import * as sessionModel from "./sessionModel";
-import { reports } from "../db/schema/reports";
 import { createSelectSchema } from "drizzle-zod";
-import { z } from "zod";
-import { eq, lte, gte, and } from "drizzle-orm";
-import { User } from "./userModel";
+import type { z } from "zod";
+import { reports } from "../db/schema/reports";
 
 export const reportSelectSchema = createSelectSchema(reports);
 export const reportInsertSchema = createSelectSchema(reports).omit({
@@ -15,11 +10,14 @@ export const reportInsertSchema = createSelectSchema(reports).omit({
 	createdAt: true,
 	updatedAt: true,
 });
+export const reportUpdateSchema = createSelectSchema(reports).omit({
+	createdAt: true,
+	updatedAt: true,
+});
 // スキーマから型を生成
 type Report = z.infer<typeof reportSelectSchema>;
 type ReportInsert = z.infer<typeof reportInsertSchema>;
-
-type ReportType = "daily" | "monthly" | "annual";
+type ReportUpdate = z.infer<typeof reportUpdateSchema>;
 
 // 年月による日報検索メソッド
 export const getDailyReportsByYearMonth = async (
@@ -87,11 +85,34 @@ export const createReport = async (
 	return result[0];
 };
 
+// レポート更新メソッド
+export const updateReport = async (
+	D1: D1Database,
+	reportData: ReportUpdate,
+): Promise<Report> => {
+	const db = drizzle(D1);
+	const now = new Date();
+
+	const result = await db
+		.update(reports)
+		.set({
+			type: reportData.type,
+			title: reportData.title,
+			year: reportData.year,
+			month: reportData.month,
+			day: reportData.day,
+			updatedAt: now,
+		})
+		.where(eq(reports.id, reportData.id))
+		.returning();
+	return result[0];
+};
+
 // レポート削除メソッド
 export const deleteReport = async (
 	D1: D1Database,
 	reportId: number,
-): Promise<boolean> => {
+): Promise<Report> => {
 	const db = drizzle(D1);
 
 	const result = await db
@@ -99,5 +120,5 @@ export const deleteReport = async (
 		.where(eq(reports.id, reportId))
 		.returning();
 
-	return result.length > 0;
+	return result[0];
 };

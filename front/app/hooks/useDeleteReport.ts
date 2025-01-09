@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
 import { hono } from "~/lib/hono";
@@ -6,22 +6,23 @@ import { getStorageUser, removeStorageUser } from "~/lib/utils";
 import type { Report } from "~/types/report";
 import { useToast } from "./use-toast";
 
-export const useUploadReport = () => {
+type UseDeleteProps = {
+	ref: React.RefObject<HTMLDialogElement | null>;
+};
+
+export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 	const navigate = useNavigate();
 	const user = getStorageUser();
 	const { toast } = useToast();
+	const queryClient = useQueryClient();
 
-	const uploadReport = useCallback(
+	const editReport = useCallback(
 		async (report: Report) => {
-			const response = await hono.api.reports.create.$post(
+			await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second delay
+			const response = await hono.api.reports.delete.$post(
 				{
 					json: {
-						title: report.title,
-						day: report.day,
-						month: report.month,
-						year: report.year,
-						type: report.type,
-						uploaderId: user?.id || "",
+						id: report.id,
 					},
 				},
 				{
@@ -34,7 +35,7 @@ export const useUploadReport = () => {
 				const data = await response.json();
 				toast({
 					title: "success",
-					description: "更新が完了しました",
+					description: "削除が完了しました",
 					variant: "info",
 				});
 				return data.report as Report;
@@ -59,7 +60,11 @@ export const useUploadReport = () => {
 	);
 
 	const { mutate, data, error, isPending } = useMutation({
-		mutationFn: uploadReport,
+		mutationFn: editReport,
+		onSuccess: () => {
+			// queryClient.invalidateQueries({ queryKey: ["reports"] });
+			ref.current?.close();
+		},
 	});
 
 	return {

@@ -1,7 +1,7 @@
-import { hono } from "~/lib/hono";
 import { useAtom } from "jotai/react";
-import { userAtom } from "~/atoms";
 import { useNavigate } from "react-router";
+import { userAtom } from "~/atoms";
+import { hono } from "~/lib/hono";
 
 export const LogoutButton: React.FC = () => {
 	const navigate = useNavigate();
@@ -30,5 +30,9 @@ export const LogoutButton: React.FC = () => {
 		}
 	};
 
-	return <button onClick={handleLogoutClick}>ログアウト</button>;
+	return (
+		<button type="button" onClick={handleLogoutClick}>
+			ログアウト
+		</button>
+	);
 };

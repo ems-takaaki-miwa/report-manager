@@ -1,16 +1,21 @@
 import {
-	isRouteErrorResponse,
+	QueryCache,
+	QueryClient,
+	QueryClientProvider,
+} from "@tanstack/react-query";
+import {
 	Links,
 	Meta,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	isRouteErrorResponse,
 } from "react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { Toaster } from "~/components/ui/toaster";
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
-import { Toaster } from "~/components/ui/toaster";
+import { useToast } from "./hooks/use-toast";
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -27,8 +32,19 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+	const { toast } = useToast();
 	// Create a client
-	const queryClient = new QueryClient();
+	const queryClient = new QueryClient({
+		queryCache: new QueryCache({
+			onError: (error) => {
+				toast({
+					title: "エラーが発生しました",
+					description: error.message,
+					variant: "error",
+				});
+			},
+		}),
+	});
 	return (
 		<html lang="en">
 			<head>

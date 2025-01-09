@@ -1,8 +1,22 @@
-import type { Report } from "../reportTable";
+import { useAtom } from "jotai";
+import { useRef } from "react";
+import { Link } from "react-router";
+import { reportAtom } from "~/atoms";
+import type { Report } from "~/types/report";
+import { DeleteReportModal } from "../deleteReportModal";
 
-export const ReportMenuButton: React.FC<Report> = (report) => {
+type ReportMenuButtonProps = {
+	report: Report;
+};
+
+export const ReportMenuButton: React.FC<ReportMenuButtonProps> = ({
+	report,
+}) => {
+	const [reportState, setReportState] = useAtom(reportAtom);
+	const ref = useRef<HTMLDialogElement | null>(null);
 	return (
 		<div className="dropdown dropdown-end">
+			<DeleteReportModal ref={ref} report={report} />
 			<button type="button" className="btn btn-ghost btn-sm">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +56,11 @@ export const ReportMenuButton: React.FC<Report> = (report) => {
 					</button>
 				</li>
 				<li>
-					<button type="button" className="flex items-center gap-2">
+					<Link
+						onClick={() => setReportState(report)}
+						to="/edit-report"
+						className="flex items-center gap-2"
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
@@ -59,10 +77,14 @@ export const ReportMenuButton: React.FC<Report> = (report) => {
 							/>
 						</svg>
 						編集
-					</button>
+					</Link>
 				</li>
 				<li>
-					<button type="button" className="flex items-center gap-2 text-error">
+					<button
+						type="button"
+						className="flex items-center gap-2 text-error"
+						onClick={() => ref.current?.showModal()}
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"

@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { useNavigate } from "react-router";
 import { hono } from "~/lib/hono";
 import { getStorageUser, removeStorageUser } from "~/lib/utils";
-import type { Report } from "../components/reportTable";
+import type { Report } from "~/types/report";
 import {
 	getCurrentYearMonth,
 	getNextMonth,

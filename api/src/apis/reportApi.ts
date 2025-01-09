@@ -14,11 +14,6 @@ const MonthlyReportsParam = z.object({
 	year: z.coerce.number(),
 });
 
-export const FileCreateParam = z.object({
-	name: z.string(),
-	fileDate: z.coerce.date(),
-});
-
 const api = new Hono<{ Bindings: Bindings }>()
 	// このルートのミドルウェア
 	.use("/*", async (c, next) => {
@@ -53,7 +48,7 @@ const api = new Hono<{ Bindings: Bindings }>()
 		return c.json({ reports: reports, ok: true });
 	})
 
-	// ファイル作成
+	// レポート作成
 	.post("/create", zValidator("json", model.reportInsertSchema), async (c) => {
 		const param = c.req.valid("json");
 		const report = await model.createReport(c.env.DB, param);
@@ -63,9 +58,19 @@ const api = new Hono<{ Bindings: Bindings }>()
 		return c.json({ report, ok: true }, 201);
 	})
 
-	// ファイル削除
-	.delete(
-		"/",
+	// レポート編集
+	.post("/update", zValidator("json", model.reportUpdateSchema), async (c) => {
+		const param = c.req.valid("json");
+		const report = await model.updateReport(c.env.DB, param);
+		if (!report) {
+			return c.json({ error: "Can not update the file", ok: false }, 422);
+		}
+		return c.json({ report, ok: true }, 201);
+	})
+
+	// レポート削除
+	.post(
+		"/delete",
 		zValidator(
 			"json",
 			z.object({
@@ -74,11 +79,11 @@ const api = new Hono<{ Bindings: Bindings }>()
 		),
 		async (c) => {
 			const param = c.req.valid("json");
-			const deleteFile = await model.deleteReport(c.env.DB, param.id);
-			if (!deleteFile) {
+			const deleteReport = await model.deleteReport(c.env.DB, param.id);
+			if (!deleteReport) {
 				return c.json({ error: "Can not delete the file", ok: false }, 422);
 			}
-			return c.json({ post: deleteFile, ok: true }, 201);
+			return c.json({ report: deleteReport, ok: true }, 201);
 		},
 	);
 

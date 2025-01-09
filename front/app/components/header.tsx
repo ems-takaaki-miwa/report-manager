@@ -1,16 +1,10 @@
 import { useAtom } from "jotai/react";
-import { useRef } from "react";
 import { Link } from "react-router";
 import { userAtom } from "~/atoms";
 import { LogoutButton } from "./ui/logoutButton";
 
 export const Header: React.FC = () => {
-	const dialog = useRef<HTMLDialogElement | null>(null);
 	const [user, setUser] = useAtom(userAtom);
-
-	const handleSearchClick = () => {
-		dialog.current?.showModal();
-	};
 
 	return (
 		<div className="navbar shadow-sm">

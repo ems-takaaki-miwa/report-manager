@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
 import { hono } from "~/lib/hono";
@@ -6,16 +6,18 @@ import { getStorageUser, removeStorageUser } from "~/lib/utils";
 import type { Report } from "~/types/report";
 import { useToast } from "./use-toast";
 
-export const useUploadReport = () => {
+export const useEditReport = () => {
 	const navigate = useNavigate();
 	const user = getStorageUser();
 	const { toast } = useToast();
+	const queryClient = useQueryClient();
 
-	const uploadReport = useCallback(
+	const editReport = useCallback(
 		async (report: Report) => {
-			const response = await hono.api.reports.create.$post(
+			const response = await hono.api.reports.update.$post(
 				{
 					json: {
+						id: report.id,
 						title: report.title,
 						day: report.day,
 						month: report.month,
@@ -59,7 +61,7 @@ export const useUploadReport = () => {
 	);
 
 	const { mutate, data, error, isPending } = useMutation({
-		mutationFn: uploadReport,
+		mutationFn: editReport,
 	});
 
 	return {
