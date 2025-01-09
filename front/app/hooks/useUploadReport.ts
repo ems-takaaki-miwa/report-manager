@@ -52,7 +52,7 @@ export const useUploadReport = ({ ref }: useUploadProps) => {
 				case 400:
 					throw new Error("パラメータに誤りがあります。");
 				case 422:
-					throw new Error("更新できませんでした。");
+					throw new Error("アップロードできませんでした。");
 				case 401:
 					removeStorageUser();
 					navigate("/login");
@@ -71,13 +71,10 @@ export const useUploadReport = ({ ref }: useUploadProps) => {
 		onSuccess: (data) => {
 			toast({
 				title: "success",
-				description: "更新が完了しました",
+				description: "アップロードが完了しました",
 				variant: "info",
 			});
-			console.log(currentPage?.reportType);
-			console.log(data.type);
 			if (currentPage?.reportType === data.type) {
-				console.log("aaa");
 				queryClient.invalidateQueries({ queryKey: GetQueryKey(currentPage) });
 			}
 			ref.current?.close();

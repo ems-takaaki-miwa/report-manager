@@ -71,7 +71,7 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
 				</h3>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
-					className="w-full flex flex-col gap-6 sm:p-8 "
+					className="w-full flex flex-col gap-6 sm:p-8 text-left"
 				>
 					<label className="flex flex-col gap-2">
 						<span>種別</span>
@@ -104,7 +104,16 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
 						{errors?.type?.message && <p>{errors.type.message}</p>}
 					</label>
 					<label className="flex flex-col gap-2">
-						<span>ファイル</span>
+						<span>
+							ファイル{" "}
+							{usecase === "edit" ? (
+								<span className="text-xs text-info ml-2">
+									*変更したい場合のみファイルを選択してください
+								</span>
+							) : (
+								""
+							)}
+						</span>
 						<input
 							{...register("file", { required: true })}
 							type="file"

@@ -2,8 +2,10 @@ import { useAtom } from "jotai";
 import { useRef } from "react";
 import { Link } from "react-router";
 import { reportAtom } from "~/atoms";
+import { useEditReport } from "~/hooks/useEditReport";
 import type { Report } from "~/types/report";
 import { DeleteReportModal } from "../deleteReportModal";
+import { ReportFormModal } from "../reportFormModal";
 
 type ReportMenuButtonProps = {
 	report: Report;
@@ -13,10 +15,20 @@ export const ReportMenuButton: React.FC<ReportMenuButtonProps> = ({
 	report,
 }) => {
 	const [reportState, setReportState] = useAtom(reportAtom);
-	const ref = useRef<HTMLDialogElement | null>(null);
+	const deleteDialogRef = useRef<HTMLDialogElement | null>(null);
+	const formDialogRef = useRef<HTMLDialogElement | null>(null);
+	const { mutate, isPending } = useEditReport({ ref: formDialogRef });
+
 	return (
 		<div className="dropdown dropdown-end">
-			<DeleteReportModal ref={ref} report={report} />
+			<DeleteReportModal ref={deleteDialogRef} report={report} />
+			<ReportFormModal
+				ref={formDialogRef}
+				report={report}
+				usecase="edit"
+				submitAction={mutate}
+				isLoading={isPending}
+			/>
 			<button type="button" className="btn btn-ghost btn-sm">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -56,9 +68,9 @@ export const ReportMenuButton: React.FC<ReportMenuButtonProps> = ({
 					</button>
 				</li>
 				<li>
-					<Link
-						onClick={() => setReportState(report)}
-						to="/edit-report"
+					<button
+						type="button"
+						onClick={() => formDialogRef.current?.showModal()}
 						className="flex items-center gap-2"
 					>
 						<svg
@@ -77,13 +89,13 @@ export const ReportMenuButton: React.FC<ReportMenuButtonProps> = ({
 							/>
 						</svg>
 						編集
-					</Link>
+					</button>
 				</li>
 				<li>
 					<button
 						type="button"
 						className="flex items-center gap-2 text-error"
-						onClick={() => ref.current?.showModal()}
+						onClick={() => deleteDialogRef.current?.showModal()}
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
