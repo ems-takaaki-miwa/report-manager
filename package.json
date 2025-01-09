@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "biome format --write ./api/src ./front/app"
+    "format": "biome format --write ./api/src ./front/app",
+    "deploy-api": "cd api && wrangler deploy --minify"
   },
   "keywords": [],
   "author": "",
