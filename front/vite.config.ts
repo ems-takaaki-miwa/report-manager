@@ -7,4 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
 	plugins: [reactRouter(), tsconfigPaths(), tailwindcss()],
+	build: {
+    sourcemap: true, // ソースマップを有効化
+  },
 });
