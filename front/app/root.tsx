@@ -12,10 +12,10 @@ import {
 	isRouteErrorResponse,
 } from "react-router";
 
-import { Toaster } from "~/components/ui/toaster";
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
-import { useToast } from "./hooks/use-toast";
+import { Toast } from "./components/ui/toast";
+import { useToast } from "./hooks/useToast";
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -32,7 +32,7 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
-	const { toast } = useToast();
+	const { showToast } = useToast();
 	// Create a client
 	const queryClient = new QueryClient({
 		queryCache: new QueryCache({
@@ -44,9 +44,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			// 	});
 			// },
 			onError: (error) => {
-				toast({
-					title: "エラーが発生しました",
-					description: error.message,
+				showToast({
+					message: error.message,
 					variant: "error",
 				});
 			},
@@ -63,7 +62,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			<body>
 				<QueryClientProvider client={queryClient}>
 					{children}
-					<Toaster />
+					<Toast />
 				</QueryClientProvider>
 				<ScrollRestoration />
 				<Scripts />

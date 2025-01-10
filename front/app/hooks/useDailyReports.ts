@@ -55,7 +55,7 @@ export const useDailyReports = () => {
 			default:
 				throw new Error("不明なエラーが発生しました");
 		}
-	}, [navigate, user, setCurrentPage]);
+	}, [navigate, user, setCurrentPage, selectedYear, selectedMonth]);
 
 	const { data, error, isLoading, isError } = useQuery({
 		queryKey: [GetReportsQueryKey.DAILY, selectedYear, selectedMonth],

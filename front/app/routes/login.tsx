@@ -7,7 +7,7 @@ import * as z from "zod";
 import { userAtom } from "~/atoms";
 import { Alert } from "~/components/ui/alert";
 import { LoginButton } from "~/components/ui/loginButton";
-import { useToast } from "~/hooks/use-toast";
+import { useToast } from "~/hooks/useToast";
 import { hono } from "~/lib/hono";
 import { getStorageUser } from "~/lib/utils";
 
@@ -39,7 +39,7 @@ const Login: React.FC = () => {
 	} = useForm<FormInput>({
 		resolver: zodResolver(FormSchema),
 	});
-	const { toast } = useToast();
+	const { showToast } = useToast();
 
 	const onSubmit: SubmitHandler<FormInput> = async (data) => {
 		try {
@@ -62,25 +62,23 @@ const Login: React.FC = () => {
 				navigate("/");
 			} else {
 				// ログイン失敗時の処理
-				toast({
+				showToast({
+					message: "ログインに失敗しました。",
 					variant: "error",
-					title: "ログイン失敗",
-					description: "ユーザーIDまたはパスワードが間違っています。",
 				});
 				console.error("Login failed");
 			}
 		} catch (error) {
-			toast({
+			showToast({
+				message: "ログインに失敗しました。",
 				variant: "error",
-				title: "ログイン失敗",
-				description: "ログイン中にサーバーでエラーが発生しました。",
 			});
 			console.error("Error:", error);
 		}
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-full w-full">
+		<div className="flex flex-col items-center justify-center min-h-full w-full p-4">
 			<h2 className="text-lg font-bold my-4">ログイン</h2>
 			<form
 				onSubmit={handleSubmit(onSubmit)}

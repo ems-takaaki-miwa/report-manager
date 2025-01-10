@@ -3,10 +3,10 @@ import { useAtom } from "jotai";
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
 import { currentPageAtom } from "~/atoms";
+import { useToast } from "~/hooks/useToast";
 import { hono } from "~/lib/hono";
 import { GetQueryKey, getStorageUser, removeStorageUser } from "~/lib/utils";
 import type { FormActionProps, Report } from "~/types/report";
-import { useToast } from "./use-toast";
 
 type useUploadProps = {
 	ref: React.RefObject<HTMLDialogElement | null>;
@@ -15,7 +15,7 @@ type useUploadProps = {
 export const useUploadReport = ({ ref }: useUploadProps) => {
 	const navigate = useNavigate();
 	const user = getStorageUser();
-	const { toast } = useToast();
+	const { showToast } = useToast();
 	const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
 	const queryClient = useQueryClient();
 
@@ -69,10 +69,9 @@ export const useUploadReport = ({ ref }: useUploadProps) => {
 	const { mutate, data, error, isPending } = useMutation({
 		mutationFn: uploadReport,
 		onSuccess: (data) => {
-			toast({
-				title: "success",
-				description: "アップロードが完了しました",
-				variant: "info",
+			showToast({
+				message: "アップロードしました",
+				variant: "success",
 			});
 			if (currentPage?.reportType === data.type) {
 				queryClient.invalidateQueries({ queryKey: GetQueryKey(currentPage) });

@@ -3,10 +3,10 @@ import { useAtom } from "jotai";
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
 import { currentPageAtom } from "~/atoms";
+import { useToast } from "~/hooks/useToast";
 import { hono } from "~/lib/hono";
 import { GetQueryKey, getStorageUser, removeStorageUser } from "~/lib/utils";
 import type { FormActionProps, Report } from "~/types/report";
-import { useToast } from "./use-toast";
 
 type useEditProps = {
 	ref: React.RefObject<HTMLDialogElement | null>;
@@ -15,7 +15,7 @@ type useEditProps = {
 export const useEditReport = ({ ref }: useEditProps) => {
 	const navigate = useNavigate();
 	const user = getStorageUser();
-	const { toast } = useToast();
+	const { showToast } = useToast();
 	const queryClient = useQueryClient();
 	const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
 
@@ -66,10 +66,9 @@ export const useEditReport = ({ ref }: useEditProps) => {
 	const { mutate, data, error, isPending } = useMutation({
 		mutationFn: editReport,
 		onSuccess: (data) => {
-			toast({
-				title: "success",
-				description: "更新が完了しました",
-				variant: "info",
+			showToast({
+				message: "更新しました。",
+				variant: "success",
 			});
 			console.log(currentPage?.reportType);
 			console.log(data.type);

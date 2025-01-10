@@ -3,10 +3,10 @@ import { useAtom } from "jotai";
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
 import { currentPageAtom } from "~/atoms";
+import { useToast } from "~/hooks/useToast";
 import { hono } from "~/lib/hono";
 import { GetQueryKey, getStorageUser, removeStorageUser } from "~/lib/utils";
 import type { Report } from "~/types/report";
-import { useToast } from "./use-toast";
 
 type UseDeleteProps = {
 	ref: React.RefObject<HTMLDialogElement | null>;
@@ -15,7 +15,7 @@ type UseDeleteProps = {
 export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 	const navigate = useNavigate();
 	const user = getStorageUser();
-	const { toast } = useToast();
+	const { showToast } = useToast();
 	const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
 	const queryClient = useQueryClient();
 
@@ -36,10 +36,9 @@ export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 			);
 			if (response.ok) {
 				const data = await response.json();
-				toast({
-					title: "success",
-					description: "削除が完了しました",
-					variant: "info",
+				showToast({
+					message: "削除しました",
+					variant: "success",
 				});
 				return data.report as Report;
 			}
@@ -59,7 +58,7 @@ export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 					throw new Error("不明なエラーが発生しました");
 			}
 		},
-		[navigate, user, toast],
+		[navigate, user, showToast],
 	);
 
 	const { mutate, data, error, isPending } = useMutation({
