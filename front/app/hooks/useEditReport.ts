@@ -32,6 +32,7 @@ export const useEditReport = ({ ref }: useEditProps) => {
 				variant: "error",
 			});
 		},
+		mutationKey: ["editReport"],
 	});
 
 	return {

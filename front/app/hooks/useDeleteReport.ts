@@ -16,12 +16,13 @@ export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 
 	const { mutate, data, error, isPending } = useMutation({
 		mutationFn: deleteReport,
-		onSuccess: () => {
+		onSuccess: (data) => {
 			showToast({
 				message: "削除しました",
 				variant: "success",
 			});
-			queryClient.refetchQueries({ queryKey: GetQueryKey(currentPage) });
+			queryClient.invalidateQueries({ queryKey: GetQueryKey(currentPage) });
+
 			ref.current?.close();
 		},
 		onError: (error) => {
@@ -30,6 +31,7 @@ export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 				variant: "error",
 			});
 		},
+		mutationKey: ["deleteReport"],
 	});
 
 	return {

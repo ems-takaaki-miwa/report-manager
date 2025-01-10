@@ -5,7 +5,6 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { redirect, useNavigate } from "react-router";
 import * as z from "zod";
 import { userAtom } from "~/atoms";
-import { Alert } from "~/components/ui/alert";
 import { LoginButton } from "~/components/ui/loginButton";
 import { useToast } from "~/hooks/useToast";
 import { hono } from "~/lib/hono";

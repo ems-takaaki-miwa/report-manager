@@ -47,3 +47,21 @@ Cloudflare Workers Adminでworkers, pages, KV, D1, R2の編集、デプロイ権
 - use-toastでビルドがとまる？ので、消してみる
 - tanstack queryの代わりにswrを使う
 - modalをルートで管理する
+- mutateを行ったコンポーネントで楽観的変更をするのではなく、fetchしているコンポーネントでmutateStateを見て、それをもとに楽観的変更をする
+- https://github.com/TanStack/query/blob/main/examples/react/optimistic-updates-cache/src/pages/index.tsx
+  - これを試す
+- vscodeの設定
+  ```
+  {
+    "markdown-preview-enhanced.previewTheme": "github-dark.css",
+    "editor.minimap.enabled": false,
+    "update.showReleaseNotes": false,
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports.biome": "explicit"
+    },
+    "editor.inlineSuggest.suppressSuggestions": true,
+    
+}
+```

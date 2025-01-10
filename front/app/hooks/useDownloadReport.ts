@@ -21,6 +21,7 @@ export const useDownloadReport = () => {
 				variant: "error",
 			});
 		},
+		mutationKey: ["downloadReport"],
 	});
 
 	return mutation;

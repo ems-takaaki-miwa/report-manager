@@ -41,6 +41,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ ref }) => {
 				variant: "error",
 			});
 		},
+		mutationKey: ["signUp"],
 	});
 
 	const onSubmit: SubmitHandler<SinUpProps> = async (data) => {

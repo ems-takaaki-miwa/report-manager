@@ -32,6 +32,7 @@ export const useUploadReport = ({ ref }: useUploadProps) => {
 				variant: "error",
 			});
 		},
+		mutationKey: ["uploadReport"],
 	});
 
 	return {
