@@ -1,6 +1,5 @@
 import { useAtom } from "jotai";
 import { useRef } from "react";
-import { Link } from "react-router";
 import { reportAtom } from "~/atoms";
 import { useDownloadReport } from "~/hooks/useDownloadReport";
 import { useEditReport } from "~/hooks/useEditReport";
@@ -19,7 +18,7 @@ export const ReportMenuButton: React.FC<ReportMenuButtonProps> = ({
 	const deleteDialogRef = useRef<HTMLDialogElement | null>(null);
 	const formDialogRef = useRef<HTMLDialogElement | null>(null);
 	const { mutate, isPending } = useEditReport({ ref: formDialogRef });
-	const downloadMutation = useDownloadReport(report);
+	const downloadMutation = useDownloadReport();
 
 	return (
 		<div className="dropdown dropdown-end">
@@ -53,7 +52,7 @@ export const ReportMenuButton: React.FC<ReportMenuButtonProps> = ({
 					<button
 						type="button"
 						className="flex items-center gap-2"
-						onClick={async () => await downloadMutation.mutate()}
+						onClick={async () => await downloadMutation.mutate({ report })}
 						disabled={downloadMutation.isPending}
 					>
 						<svg

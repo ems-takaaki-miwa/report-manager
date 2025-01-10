@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { CurrentPage } from "~/atoms";
-import { GetReportsQueryKey } from "~/types/report";
+import { FetchReportsQueryKey } from "~/types/report";
 import type { User } from "~/types/user";
 
 export function cn(...inputs: ClassValue[]) {
@@ -21,12 +21,11 @@ export const GetQueryKey = (page: CurrentPage | null) => {
 	if (!page) return [];
 	switch (page.reportType) {
 		case "daily":
-			return [GetReportsQueryKey.DAILY, page.year, page.month];
+			return [FetchReportsQueryKey.DAILY, page.year, page.month];
 		case "annual":
-			console.log("GetReportsQueryKey.ANNUAL");
-			return [GetReportsQueryKey.ANNUAL];
+			return [FetchReportsQueryKey.ANNUAL];
 		case "monthly":
-			return [GetReportsQueryKey.MONTHLY, page.year];
+			return [FetchReportsQueryKey.MONTHLY, page.year];
 	}
 };
 

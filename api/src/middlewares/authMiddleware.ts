@@ -1,8 +1,8 @@
 import { Context, Hono } from "hono";
 import { getCookie } from "hono/cookie";
-import { Bindings } from "../bindings";
-import * as sessionModel from "../models/sessionModel";
 import { createMiddleware } from "hono/factory";
+import type { Bindings } from "../bindings";
+import type * as sessionModel from "../models/sessionModel";
 // createMiddleware関数を使って、ミドルウェアを作成する
 
 export const checkSession = createMiddleware<{ Bindings: Bindings }>(

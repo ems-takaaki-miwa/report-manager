@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
+import type { GetReportProps } from "../apis/reportApi";
 import { reports } from "../db/schema/reports";
 
 export const reportSelectSchema = createSelectSchema(reports);
@@ -19,8 +20,27 @@ type Report = z.infer<typeof reportSelectSchema>;
 type ReportInsert = z.infer<typeof reportInsertSchema>;
 type ReportUpdate = z.infer<typeof reportUpdateSchema>;
 
+// レポート取得
+export const getReports = async (
+	D1: D1Database,
+	param: GetReportProps,
+): Promise<Report[]> => {
+	const db = drizzle(D1);
+
+	switch (param.type) {
+		case "daily":
+			return await getDailyReportsByYearMonth(D1, param.year, param.month);
+		case "monthly":
+			return await getMonthlyReportsByYear(D1, param.year);
+		case "annual":
+			return await getAnnualReports(D1);
+		default:
+			throw new Error("不明なパラメーターです");
+	}
+};
+
 // 年月による日報検索メソッド
-export const getDailyReportsByYearMonth = async (
+const getDailyReportsByYearMonth = async (
 	D1: D1Database,
 	year: number,
 	month: number,
@@ -41,7 +61,7 @@ export const getDailyReportsByYearMonth = async (
 };
 
 // 年による月報検索メソッド
-export const getMonthlyReportsByYear = async (
+const getMonthlyReportsByYear = async (
 	D1: D1Database,
 	year: number,
 ): Promise<Report[]> => {
@@ -55,7 +75,7 @@ export const getMonthlyReportsByYear = async (
 };
 
 // 年による年報検索メソッド
-export const getAnnualReports = async (D1: D1Database): Promise<Report[]> => {
+const getAnnualReports = async (D1: D1Database): Promise<Report[]> => {
 	const db = drizzle(D1);
 
 	return await db

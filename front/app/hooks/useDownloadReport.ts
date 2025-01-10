@@ -5,10 +5,10 @@ import { useToast } from "~/hooks/useToast";
 import { downloadReport } from "~/lib/report";
 import type { Report } from "~/types/report";
 
-export const useDownloadReport = (report: Report) => {
+export const useDownloadReport = () => {
 	const { showToast } = useToast();
 	const mutation = useMutation({
-		mutationFn: () => downloadReport({ report }),
+		mutationFn: downloadReport,
 		onSuccess: () => {
 			showToast({
 				message: "ダウンロードしました",

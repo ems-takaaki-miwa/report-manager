@@ -14,10 +14,10 @@ export type Report = {
 
 export type ReportType = "daily" | "monthly" | "annual";
 
-export const GetReportsQueryKey = {
-	DAILY: "getDailyReports",
-	MONTHLY: "getMonthlyReports",
-	ANNUAL: "getAnnualReports",
+export const FetchReportsQueryKey = {
+	DAILY: "daily",
+	MONTHLY: "monthly",
+	ANNUAL: "annual",
 } as const;
 
 export type FormActionProps = {

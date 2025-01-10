@@ -6,12 +6,12 @@ interface DownloadButtonProps {
 }
 
 export const DownloadButton: React.FC<DownloadButtonProps> = ({ report }) => {
-	const mutation = useDownloadReport(report);
+	const mutation = useDownloadReport();
 	return (
 		<button
 			type="button"
 			className="btn btn-primary btn-sm"
-			onClick={async () => await mutation.mutate()}
+			onClick={async () => await mutation.mutate({ report })}
 			disabled={mutation.isPending}
 		>
 			<svg

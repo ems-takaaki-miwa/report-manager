@@ -5,14 +5,13 @@ import type { Bindings } from "../bindings";
 import { checkSession } from "../middlewares/authMiddleware";
 import * as model from "../models/reportModel";
 
-const DailyReportsParam = z.object({
-	month: z.coerce.number(),
+const GetReportsParam = z.object({
+	type: z.enum(["daily", "monthly", "annual"]),
 	year: z.coerce.number(),
+	month: z.coerce.number(),
 });
 
-const MonthlyReportsParam = z.object({
-	year: z.coerce.number(),
-});
+export type GetReportProps = z.infer<typeof GetReportsParam>;
 
 const api = new Hono<{ Bindings: Bindings }>()
 	// このルートのミドルウェア
@@ -20,31 +19,10 @@ const api = new Hono<{ Bindings: Bindings }>()
 		return checkSession(c, next);
 	})
 
-	// 日報取得
-	.post("/daily-reports", zValidator("json", DailyReportsParam), async (c) => {
-		const param = c.req.valid("json");
-		const reports = await model.getDailyReportsByYearMonth(
-			c.env.DB,
-			param.year,
-			param.month,
-		);
-		return c.json({ reports: reports, ok: true });
-	})
-
-	// 月報取得
-	.post(
-		"/monthly-reports",
-		zValidator("json", MonthlyReportsParam),
-		async (c) => {
-			const param = c.req.valid("json");
-			const reports = await model.getMonthlyReportsByYear(c.env.DB, param.year);
-			return c.json({ reports: reports, ok: true });
-		},
-	)
-
-	// 年報取得
-	.post("/annual-reports", async (c) => {
-		const reports = await model.getAnnualReports(c.env.DB);
+	// レポート取得
+	.post("/reports", zValidator("json", GetReportsParam), async (c) => {
+		const param: GetReportProps = c.req.valid("json");
+		const reports = await model.getReports(c.env.DB, param);
 		return c.json({ reports: reports, ok: true });
 	})
 
