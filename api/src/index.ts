@@ -10,10 +10,7 @@ const middleware = new Hono<{ Bindings: Bindings }>()
 	.use(
 		"*",
 		cors({
-			origin: [
-				"http://localhost:5173",
-				"https://report-manager.pages.dev/login",
-			], // ここを変更することで、許可するオリジンを変更できる
+			origin: ["http://localhost:5173", "https://report-manager.pages.dev"], // ここを変更することで、許可するオリジンを変更できる
 		}),
 	);
 
