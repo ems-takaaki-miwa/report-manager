@@ -1,3 +1,4 @@
+import { useDownloadReport } from "~/hooks/useDownloadReport";
 import type { Report } from "~/types/report";
 
 interface DownloadButtonProps {
@@ -5,8 +6,14 @@ interface DownloadButtonProps {
 }
 
 export const DownloadButton: React.FC<DownloadButtonProps> = ({ report }) => {
+	const mutation = useDownloadReport(report);
 	return (
-		<button type="button" className="btn btn-primary btn-sm">
+		<button
+			type="button"
+			className="btn btn-primary btn-sm"
+			onClick={async () => await mutation.mutate()}
+			disabled={mutation.isPending}
+		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				height="20px"
