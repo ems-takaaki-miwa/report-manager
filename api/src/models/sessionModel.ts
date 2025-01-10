@@ -1,4 +1,4 @@
-import { User } from "./userModel";
+import type { User } from "./userModel";
 export interface Session {
 	user: User;
 	expires: number;

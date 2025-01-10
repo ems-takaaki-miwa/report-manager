@@ -85,6 +85,33 @@ const api = new Hono<{ Bindings: Bindings }>()
 			}
 			return c.json({ report: deleteReport, ok: true }, 201);
 		},
+	)
+
+	// レポートダウンロード
+	.post(
+		"/download",
+		zValidator(
+			"json",
+			z.object({
+				id: z.number(),
+			}),
+		),
+		async (c) => {
+			const param = c.req.valid("json");
+			const report = await model.getReportById(c.env.DB, param.id);
+
+			if (!report) {
+				return c.json({ error: "Report not found", ok: false }, 404);
+			}
+
+			// Todo: R2に保存したPDFを取得するようにする
+			const file = await fetch("http://127.0.0.1:8787/static/test.pdf");
+			return new Response(file.body, {
+				headers: {
+					"Content-Type": "application/pdf",
+				},
+			});
+		},
 	);
 
 export default api;

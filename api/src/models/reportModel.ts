@@ -122,3 +122,16 @@ export const deleteReport = async (
 
 	return result[0];
 };
+
+export const getReportById = async (
+	D1: D1Database,
+	reportId: number,
+): Promise<Report> => {
+	const db = drizzle(D1);
+	const result = await db
+		.select()
+		.from(reports)
+		.where(eq(reports.id, reportId))
+		.limit(1);
+	return result[0];
+};
