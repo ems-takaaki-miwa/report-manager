@@ -3,9 +3,10 @@ import { useAtom } from "jotai";
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
 import { currentPageAtom } from "~/atoms";
+import { userAtom } from "~/atoms";
 import { useToast } from "~/hooks/useToast";
 import { hono } from "~/lib/hono";
-import { GetQueryKey, getStorageUser, removeStorageUser } from "~/lib/utils";
+import { GetQueryKey } from "~/lib/utils";
 import type { Report } from "~/types/report";
 
 type UseDeleteProps = {
@@ -14,7 +15,7 @@ type UseDeleteProps = {
 
 export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 	const navigate = useNavigate();
-	const user = getStorageUser();
+	const [user, setUser] = useAtom(userAtom);
 	const { showToast } = useToast();
 	const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
 	const queryClient = useQueryClient();
@@ -49,7 +50,7 @@ export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 				case 422:
 					throw new Error("更新できませんでした。");
 				case 401:
-					removeStorageUser();
+					setUser(null);
 					navigate("/login");
 					throw new Error("セッションの有効期限が切れました。");
 				case 500:
@@ -58,7 +59,7 @@ export const useDeleteReport = ({ ref }: UseDeleteProps) => {
 					throw new Error("不明なエラーが発生しました");
 			}
 		},
-		[navigate, user, showToast],
+		[navigate, user, showToast, setUser],
 	);
 
 	const { mutate, data, error, isPending } = useMutation({

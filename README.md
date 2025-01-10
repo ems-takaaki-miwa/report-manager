@@ -46,3 +46,4 @@ Cloudflare Workers Adminでworkers, pages, KV, D1, R2の編集、デプロイ権
 - mutateのonsuccessでqueryClient.invalidateQueries()をしてもうまくいかない。
 - use-toastでビルドがとまる？ので、消してみる
 - tanstack queryの代わりにswrを使う
+- modalをルートで管理する

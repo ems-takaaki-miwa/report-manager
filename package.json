@@ -6,7 +6,10 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"format": "biome format --write ./api/src ./front/app",
+		"dev-api": "cd api && wrangler dev",
+		"preview-api": "cd api &&wrangler dev --remote",
 		"deploy-api": "cd api && wrangler deploy --minify",
+		"dev-front": "cd front && react-router dev",
 		"build-front": "cd front && cross-env NODE_ENV=production react-router build"
 	},
 	"keywords": [],

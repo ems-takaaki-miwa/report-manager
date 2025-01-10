@@ -1,3 +1,5 @@
+import { useAtom } from "jotai";
+import { userAtom } from "~/atoms";
 import { formatDate } from "~/lib/utils/dateUtils";
 import type { Report } from "~/types/report";
 import { DownloadButton } from "./ui/downloadButton";
@@ -9,6 +11,7 @@ interface ReportTableProps {
 }
 
 const ReportTable: React.FC<ReportTableProps> = ({ reports, type }) => {
+	const [user] = useAtom(userAtom);
 	const getDateHeader = () => {
 		switch (type) {
 			case "daily":
@@ -53,7 +56,11 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, type }) => {
 								{formatDate(report.updatedAt)}
 							</td>
 							<td className="text-center whitespace-nowrap">
-								<ReportMenuButton report={report} />
+								{user?.role === "admin" ? (
+									<ReportMenuButton report={report} />
+								) : (
+									<DownloadButton report={report} />
+								)}
 							</td>
 						</tr>
 					))}

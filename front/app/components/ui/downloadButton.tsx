@@ -1,4 +1,10 @@
-export const DownloadButton: React.FC = () => {
+import type { Report } from "~/types/report";
+
+interface DownloadButtonProps {
+	report: Report;
+}
+
+export const DownloadButton: React.FC<DownloadButtonProps> = ({ report }) => {
 	return (
 		<button type="button" className="btn btn-primary btn-sm">
 			<svg

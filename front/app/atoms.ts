@@ -2,13 +2,7 @@ import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import type { Report, ReportType } from "./types/report";
 import type { Toast } from "./types/toast";
-
-export interface User {
-	id: string;
-	name: string;
-	role: "admin" | "user";
-	sessionId: string;
-}
+import type { User } from "./types/user";
 
 export interface CurrentPage {
 	reportType: ReportType;

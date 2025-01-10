@@ -1,8 +1,8 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { User } from "~/atoms";
 import type { CurrentPage } from "~/atoms";
 import { GetReportsQueryKey } from "~/types/report";
+import type { User } from "~/types/user";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -40,5 +40,27 @@ export const getReportTypeLabel = (type: string) => {
 			return "年報";
 		default:
 			return type;
+	}
+};
+
+export const handleError = (statusCode: number) => {
+	let message = "";
+	switch (statusCode) {
+		case 400:
+			message = "パラメータに誤りがあります。";
+			throw new Error(message);
+		case 401:
+			message =
+				"セッションの有効期限が切れています。ログインし直してください。";
+			throw new Error(message);
+		case 403:
+			message = "権限がありません。";
+			throw new Error(message);
+		case 404:
+			message = "apiが見つかりません。";
+			throw new Error(message);
+		default:
+			message = "サーバーエラーが発生しました。";
+			throw new Error(message);
 	}
 };
